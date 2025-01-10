@@ -1,0 +1,25 @@
+doctype html
+html
+  head
+    title #{title || 'Brain In Gaming'} - Unlock Your Brain's Full Potential
+    link(rel="stylesheet", href="/stylesheets/style.css")
+    script(src="https://kit.fontawesome.com/a076d05399.js", crossorigin="anonymous")
+  body
+    // Navbar Section
+    .navbar
+      .navbar-container
+        .logo
+          a(href="/") Brain In Gaming
+        .nav-links
+          a(href="/games") Games
+          a(href="/login") Login
+          a(href="/register") Register
+
+    // Content Block
+    block content
+
+    // Footer Section
+    .footer
+      p &copy; 2025 Brain In Gaming. All Rights Reserved.
+      a(href='/privacy-policy') Privacy Policy
+      a(href='/terms-of-service') Terms of Service

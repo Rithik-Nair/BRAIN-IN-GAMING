@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 Available Games
+  .game-list
+    each game in games
+      .game-item
+        .game-box
+          h2= game.name
+          p= game.description
+          button(onclick="window.location.href='/play/#{game.name}'") Play Now

@@ -1,0 +1,28 @@
+// home.jade
+extends layout
+
+block content
+  .hero
+    .hero-content
+      h1 Welcome to Brain In Gaming
+      p Unlock your brain's full potential with fun and challenging games.
+      button(onclick="window.location.href='/play/#{game.name}'") Play Now
+      .cta-buttons
+        button(onclick="window.location.href='/login'") Login
+        button(onclick="window.location.href='/register'") Register
+
+  .features
+    h2 Why Choose Us?
+    .feature-cards
+      .feature-card
+        i(class="fas fa-gamepad fa-3x")
+        h3 Fun Games
+        p Engaging games that challenge your brain and boost cognitive abilities.
+      .feature-card
+        i(class="fas fa-mobile-alt fa-3x")
+        h3 Easy Access
+        p Play games anytime, anywhere with an intuitive interface.
+      .feature-card
+        i(class="fas fa-chart-line fa-3x")
+        h3 Progress Tracking
+        p Monitor your progress and improve your skills over time.

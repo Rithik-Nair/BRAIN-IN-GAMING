@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title Error - Brain In Gaming
+    link(rel="stylesheet", href="/stylesheets/style.css")
+  body
+    .container
+      h1 Error: #{message}
+      p We are sorry, but something went wrong.
+      if error.status === 404
+        p Page not found.
+      else
+        p An unexpected error occurred. Please try again later.
+    footer
+      p &copy; 2025 Brain In Gaming
