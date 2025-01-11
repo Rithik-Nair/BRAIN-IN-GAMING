@@ -1,11 +1,11 @@
 extends layout
 
 block content
-  h1 Available Games
+  h1(style="margin-top:100px") Available Games
   .game-list
     each game in games
       .game-item
         .game-box
           h2= game.name
           p= game.description
-          button(onclick="window.location.href='/play/#{game.name}'") Play Now
+          button(onclick="window.location.href='/#{game.name.toLowerCase().replace(/\s+/g, '')}'") Play #{game.name}

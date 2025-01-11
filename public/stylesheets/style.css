@@ -195,7 +195,7 @@ body {
 }
 
 .game-box {
-  background-color: #f7f7f7;
+  background-color: #3ab4da67;
   width: 100%;
   padding: 20px;
   border-radius: 10px;
@@ -234,6 +234,9 @@ body {
 .game-box button:hover {
   background-color: #ff3679;
 }
+
+
+
 /* Form Container */
 .form-container {
   max-width: 400px;
@@ -284,4 +287,20 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #ff3679;
+}
+.logo {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #ff5c8d; /* Vibrant color */
+  font-family: 'Arial', sans-serif; /* Or any preferred font */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.logo:hover {
+  color: #ff3679; /* Slightly darker shade for hover effect */
 }
