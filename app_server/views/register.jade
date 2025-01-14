@@ -1,20 +1,56 @@
 extends layout
 
 block content
-  h1(style="margin-top:100px; text-align:center;") Register
+  header
+    .navbar
+      .menu-container
+        h1 Brain in Gaming
+  
+  .main-container
+    .hero-section
+      h1 Ready to Control Games with Your Mind?
+      p Enter your username and password to create a new account for brain-controlled gaming. If you already have an account, log in now!
+    
+    .register-box
+      h2 Create Your Account
+      form(action='/register', method='POST')
+        .form-container
+          .form-group
+            label(for='username') Username:
+            input(type='text', name='username', required, placeholder='Enter your username')
 
-  .form-container
-    form(action="/register", method="POST")
-      .form-field
-        label(for="username") Username
-        input(type="text", id="username", name="username", required)
+          .form-group
+            label(for='password') Password:
+            input(type='password', name='password', id='password', required, placeholder='Enter your password')
+            label
+              input(type='checkbox', id='show-password') Show Password
+            
+          button(type='submit', class='btn btn-primary') Register
+      
+      p Already have an account? 
+        a(href='/login') Log in here
 
-      .form-field
-        label(for="email") Email
-        input(type="email", id="email", name="email", required)
+  footer
+    .footer-container
+      .footer-feature
+        h4 Brain-Controlled Gaming Experience
+        p Push the boundaries of gaming with the power of your mind.
+      .footer-feature
+        h4 Cutting-Edge AI Technology
+        p Experience next-level AI integration that enhances your gameplay.
+      .footer-feature
+        h4 Instant Feedback & Insights
+        p Get real-time performance analysis to help you improve your gaming skills.
 
-      .form-field
-        label(for="password") Password
-        input(type="password", id="password", name="password", required)
+  p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
 
-      button(type="submit") Register
+  // Place your script at the end of the body
+  script.
+    document.getElementById('show-password').addEventListener('change', function() {
+      var passwordField = document.getElementById('password');
+      if (this.checked) {
+        passwordField.type = 'text';  // Show password
+      } else {
+        passwordField.type = 'password';  // Hide password
+      }
+    });

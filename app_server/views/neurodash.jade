@@ -1,0 +1,257 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Neuro Dash Game
+    style.
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background-color: #111;
+      }
+
+      canvas {
+        display: block;
+        margin: 0 auto;
+        background-color: #222;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      #score {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 10px;
+        z-index: 10;
+      }
+
+      #play-again, #view-report {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        background-color: #28a745;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: none;
+        z-index: 10;
+      }
+
+      #play-again:hover, #view-report:hover {
+        background-color: #218838;
+      }
+
+      #concentration-meter {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 10px;
+        z-index: 10;
+      }
+
+      #concentration-bar {
+        width: 100px;
+        height: 10px;
+        background-color: #555;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      #concentration-level {
+        height: 100%;
+        background-color: #00FF00;
+        border-radius: 5px;
+      }
+
+      .pulse {
+        animation: pulse 1s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+  body
+    #score Score: 0
+    button#play-again(onclick="restartGame()") Play Again
+    button#view-report(onclick="viewReport()") View Report
+    canvas#gameCanvas
+    #concentration-meter
+      | Concentration: 
+      #concentration-bar
+        #concentration-level(style="width: 75%;")
+
+    script.
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = 300;
+
+      const groundHeight = 40;
+      const obstacles = [];
+      let score = 0;
+      let gameSpeed = 5;
+      let isGameOver = false;
+      let concentrationLevel = 75;
+
+      const player = {
+        x: 50,
+        y: canvas.height - groundHeight - 50,
+        width: 50,
+        height: 50,
+        dy: 0,
+        isJumping: false,
+      };
+
+      const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGradient.addColorStop(0, "#222");
+      skyGradient.addColorStop(1, "#444");
+
+      const obstacleImages = [
+        "https://img.icons8.com/emoji/48/000000/alien-monster.png",
+        "https://img.icons8.com/emoji/48/000000/robot.png",
+        "https://img.icons8.com/emoji/48/000000/dog.png"
+      ];
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp" && !player.isJumping) {
+          player.isJumping = true;
+          player.dy = -12;
+        }
+      });
+
+      document.addEventListener("keyup", (e) => {
+        if (e.key === "ArrowDown") {
+          player.isJumping = false;
+        }
+      });
+
+      function addObstacle() {
+        const obstacle = {
+          x: canvas.width + Math.random() * 300,
+          y: canvas.height - groundHeight - 40,
+          width: 40,
+          height: 40,
+          image: new Image(),
+        };
+        obstacle.image.src = obstacleImages[Math.floor(Math.random() * obstacleImages.length)];
+        obstacles.push(obstacle);
+      }
+
+      function isColliding(a, b) {
+        return (
+          a.x < b.x + b.width &&
+          a.x + a.width > b.x &&
+          a.y < b.y + b.height &&
+          a.y + a.height > b.y
+        );
+      }
+
+      function updateConcentration() {
+        if (!isGameOver) {
+          concentrationLevel = Math.max(0, concentrationLevel - 0.1);
+          document.getElementById("concentration-level").style.width = `${concentrationLevel}%`;
+        }
+      }
+
+      function gameLoop() {
+        if (isGameOver) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "#228B22";
+        ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
+
+        if (player.isJumping) {
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        player.y += player.dy;
+        if (player.y + player.height >= canvas.height - groundHeight) {
+          player.y = canvas.height - groundHeight - player.height;
+          player.dy = 0;
+          player.isJumping = false;
+        } else {
+          player.dy += 0.5;
+        }
+
+        obstacles.forEach((obstacle, index) => {
+          ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+          obstacle.x -= gameSpeed;
+
+          if (obstacle.x + obstacle.width < 0) {
+            obstacles.splice(index, 1);
+            score++;
+            if (score % 10 === 0) gameSpeed += 1;
+          }
+
+          if (isColliding(player, obstacle)) {
+            isGameOver = true;
+            document.getElementById("play-again").style.display = "block";
+            document.getElementById("view-report").style.display = "block";
+            document.getElementById("concentration-meter").classList.add("pulse");
+          }
+        });
+
+        document.getElementById("score").innerText = `Score: ${score}`;
+
+        updateConcentration();
+
+        requestAnimationFrame(gameLoop);
+      }
+
+      function spawnObstacles() {
+        if (!isGameOver) {
+          addObstacle();
+          setTimeout(spawnObstacles, Math.random() * 2000 + 1000);
+        }
+      }
+
+      function restartGame() {
+        score = 0;
+        gameSpeed = 5;
+        isGameOver = false;
+        obstacles.length = 0;
+        concentrationLevel = 75;
+        document.getElementById("play-again").style.display = "none";
+        document.getElementById("view-report").style.display = "none";
+        document.getElementById("concentration-meter").classList.remove("pulse");
+        player.y = canvas.height - groundHeight - 50;
+        gameLoop();
+        spawnObstacles();
+      }
+
+      function viewReport() {
+        alert(`Game Over! Your final score is: ${score}`);
+      }
+
+      gameLoop();
+      spawnObstacles();

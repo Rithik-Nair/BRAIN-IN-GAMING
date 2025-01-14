@@ -1,28 +1,32 @@
-// index.jade
 extends layout
 
 block content
+    header
+        .navbar
+            .menu-container
+                h1 Brain in Gaming
+    
+    .main-container
+        .hero-section
+            h1 Ready to Control Games with Your Mind?
+            p Discover the power of brain-controlled gaming with Brain in Gaming. Log in or register to start!
+        
+        .cta-box
+            h2 Choose Your Path
+            .auth-box
+                  a(href='/login', class='btn btn-primary') Login
+                  a(href='/register', class='btn btn-primary') Register
+        
+    footer
+    .footer-container
+        .footer-feature
+            h4 Brain-Powered Gaming
+            p Experience the future of gaming where your brain takes the lead.
+        .footer-feature
+            h4 Advanced AI Integration
+            p Harness the power of AI to create unique gaming experiences.
+        .footer-feature
+            h4 Real-Time Analytics
+            p Track your performance and improve your gameplay with real-time data.
 
-  .hero
-    .hero-content
-      h1 Welcome to Brain In Gaming
-      p Unlock your brain's full potential with fun and challenging games.
-      .cta-buttons
-        button(onclick="window.location.href='/login'") Login
-        button(onclick="window.location.href='/register'") Register
-
-  .features
-    h2 Why Choose Us?
-    .feature-cards
-      .feature-card
-        i(class="fas fa-gamepad fa-3x")
-        h3 Fun Games
-        p Engaging games that challenge your brain and boost cognitive abilities.
-      .feature-card
-        i(class="fas fa-mobile-alt fa-3x")
-        h3 Easy Access
-        p Play games anytime, anywhere with an intuitive interface.
-      .feature-card
-        i(class="fas fa-chart-line fa-3x")
-        h3 Progress Tracking
-        p Monitor your progress and improve your skills over time.
+    p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
