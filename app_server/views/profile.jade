@@ -1,0 +1,75 @@
+extends layout
+
+block content
+  header
+    .navbar
+      .menu-container
+        h1 Brain in Gaming
+        .menu-icon
+          span
+          span
+          span
+        .dropdown-menu
+          a(href='/profile') Profile
+          a(href='/history') History
+          a(href='/about') About
+          a(href='/home') Home
+          a(href='/auth/logout') Logout
+
+  .main-container
+    .hero-section
+      h1 Your Profile
+
+    .profile-section
+      .profile-box
+        h2 Personal Information
+        .profile-info
+          p Name: 
+            span #{user.name}
+          p Username: 
+            span #{user.username}
+          p Email: 
+            span #{user.email}
+        a(href='/profile/edit', class='btn btn-secondary') Edit Profile
+
+      .profile-box
+        h2 Brain Activity Stats
+        .stats-info
+          p Games Played: 
+            span #{user.gamesPlayed}
+          p Average Brain Activity Score: 
+            span #{user.avgBrainActivityScore}%
+          p High Score: 
+            span #{user.highScore}
+
+      .profile-box
+        h2 Preferences
+        .preferences-info
+          p Preferred Game Mode: 
+            span #{user.preferredGameMode}
+          p Notification Settings: 
+            span #{user.notificationSettings}
+        a(href='/profile/settings', class='btn btn-secondary') Update Preferences
+
+  footer
+    .footer-container
+      .footer-feature
+        h4 Brain-Controlled Gaming Experience
+        p Push the boundaries of gaming with the power of your mind.
+      .footer-feature
+        h4 Cutting-Edge AI Technology
+        p Experience next-level AI integration that enhances your gameplay.
+      .footer-feature
+        h4 Instant Feedback & Insights
+        p Get real-time performance analysis to help you improve your gaming skills.
+
+    p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
+
+  // JavaScript to handle the menu toggle
+  script.
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelector('.menu-icon').addEventListener('click', function () {
+        this.classList.toggle('active');
+        document.querySelector('.dropdown-menu').classList.toggle('show');
+      });
+    });

@@ -5,30 +5,42 @@ block content
     .navbar
       .menu-container
         h1 Brain in Gaming
-  
+
   .main-container
     .hero-section
-      h1 Ready to Control Games with Your Mind?
-      p Enter your username and password to create a new account for brain-controlled gaming. If you already have an account, log in now!
-    
+      h1 Create Your Account
+      p Join the future of gaming and control games with your mind! Register now to unlock your brain-controlled gaming experience.
+
     .register-box
-      h2 Create Your Account
+      h2 Register a New Account
       form(action='/register', method='POST')
         .form-container
+          .form-group
+            label(for='name') Name:
+            input(type='text', name='name', required, placeholder='Enter your full name')
+
           .form-group
             label(for='username') Username:
             input(type='text', name='username', required, placeholder='Enter your username')
 
           .form-group
+            label(for='email') Email:
+            input(type='email', name='email', required, placeholder='Enter your email')
+
+          .form-group
             label(for='password') Password:
-            input(type='password', name='password', id='password', required, placeholder='Enter your password')
+            input(type='password', name='password', id='password', required, placeholder='Create a password')
             label
               input(type='checkbox', id='show-password') Show Password
-            
+
+          .form-group
+            label(for='confirm-password') Confirm Password:
+            input(type='password', name='confirm-password', required, placeholder='Confirm your password')
+
           button(type='submit', class='btn btn-primary') Register
-      
+
       p Already have an account? 
-        a(href='/login') Log in here
+        a(href='/login') Login here
 
   footer
     .footer-container
@@ -44,13 +56,16 @@ block content
 
   p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
 
-  // Place your script at the end of the body
+  // Script to handle password visibility toggle
   script.
     document.getElementById('show-password').addEventListener('change', function() {
       var passwordField = document.getElementById('password');
+      var confirmPasswordField = document.getElementById('confirm-password');
       if (this.checked) {
         passwordField.type = 'text';  // Show password
+        confirmPasswordField.type = 'text';  // Show confirm password
       } else {
         passwordField.type = 'password';  // Hide password
+        confirmPasswordField.type = 'password';  // Hide confirm password
       }
     });

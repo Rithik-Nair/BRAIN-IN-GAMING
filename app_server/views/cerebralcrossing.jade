@@ -2,68 +2,75 @@ extends layout
 
 block content
   // Page Title
-  h1(style="margin-top:100px") Mind Maze - Puzzle Game
+  h1(style="margin-top:100px; color: #4CAF50; font-family: 'Arial', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);") Cerebral Crossing - Puzzle Game
   .game-container
-    // Instructions (Find the path to goal message)
+    // Instructions (Cross the obstacles message)
     .instructions
-      p#instructions Find the path to the goal!
-    
-    // Maze Grid
-    .maze-wrapper
-      #maze-container
-        // Placeholder for the maze grid
+      p#instructions(style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 20px;") Cross the obstacles to reach the goal!
 
-    // Buttons below the maze grid
+    // Game Grid
+    .game-wrapper
+      #game-container
+        // Placeholder for game elements (Obstacles & Goal)
+
+    // Buttons below the game grid
     .buttons-wrapper
       button#start-button(onclick="startGame()") Start Game
       button#reset-button(onclick="resetGame()") Reset Game
 
   script.
-    let maze;
-    let mazeSize = 10;  // Set maze size (10x10 for example)
-    let pathFound = false;
+    let game;
+    let gameSize = 10;  // Set grid size (10x10 for example)
+    let goalReached = false;
 
     // Function to start the game
     function startGame() {
-      document.getElementById("instructions").textContent = "Find the path to the goal!";
-      maze = generateMaze(mazeSize);
-      displayMaze(maze);
-      pathFound = false;
+      document.getElementById("instructions").textContent = "Cross the obstacles to reach the goal!";
+      game = generateGameGrid(gameSize);
+      displayGameGrid(game);
+      goalReached = false;
     }
 
     // Function to reset the game
     function resetGame() {
-      document.getElementById("instructions").textContent = "Solve the puzzle by finding the hidden paths!";
-      pathFound = false;
-      displayMaze(maze);
+      document.getElementById("instructions").textContent = "Cross the obstacles to reach the goal!";
+      goalReached = false;
+      displayGameGrid(game);
     }
 
-    // Function to generate maze
-    function generateMaze(size) {
+    // Function to generate game grid with obstacles and goal
+    function generateGameGrid(size) {
       let grid = Array.from({ length: size }, () => Array(size).fill(0));
       grid[0][0] = 1; // Start point
       grid[size - 1][size - 1] = 2; // Goal point
-
-      // Random maze generation logic here (you can implement a simple algorithm like DFS or BFS)
-      // For simplicity, I'm just marking the start and end
+      // Random obstacle generation (you can improve with more complex logic)
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (Math.random() < 0.2 && (i !== 0 || j !== 0) && (i !== size - 1 || j !== size - 1)) {
+            grid[i][j] = 3; // Obstacle point
+          }
+        }
+      }
       return grid;
     }
 
-    // Function to display maze
-    function displayMaze(grid) {
-      const container = document.getElementById("maze-container");
-      container.innerHTML = ""; // Clear previous maze
+    // Function to display the game grid
+    function displayGameGrid(grid) {
+      const container = document.getElementById("game-container");
+      container.innerHTML = ""; // Clear previous grid
 
       grid.forEach((row, rowIndex) => {
         row.forEach((cell, colIndex) => {
           const cellElement = document.createElement("div");
-          cellElement.className = "maze-cell";
+          cellElement.className = "game-cell";
           if (cell === 1) {
             cellElement.classList.add("start");  // Start point
             cellElement.textContent = "S";
           } else if (cell === 2) {
             cellElement.classList.add("goal");  // Goal point
             cellElement.textContent = "G";
+          } else if (cell === 3) {
+            cellElement.classList.add("obstacle");  // Obstacle point
           } else {
             cellElement.classList.add("empty");
           }
@@ -72,14 +79,19 @@ block content
       });
     }
 
-    // Add event listeners for game interactions (e.g., clicking on cells to try paths)
-    document.getElementById("maze-container").addEventListener("click", (event) => {
+    // Add event listeners for game interactions (e.g., clicking on cells to check the path)
+    document.getElementById("game-container").addEventListener("click", (event) => {
       const target = event.target;
-      if (target.classList.contains("maze-cell")) {
-        // Handle cell click (you could implement path finding and checking logic here)
-        target.classList.add("visited");
-        if (pathFound) {
-          document.getElementById("instructions").textContent = "Congratulations! You've completed the maze!";
+      if (target.classList.contains("game-cell") && !goalReached) {
+        // Handle cell click (you could implement path checking logic here)
+        if (target.classList.contains("obstacle")) {
+          target.classList.add("visited");
+          document.getElementById("instructions").textContent = "Oops! You hit an obstacle.";
+        } else if (target.classList.contains("goal")) {
+          goalReached = true;
+          document.getElementById("instructions").textContent = "Congratulations! You've reached the goal!";
+        } else {
+          target.classList.add("visited");
         }
       }
     });
@@ -90,22 +102,38 @@ block content
 
   style.
     /* Layout Styling */
-    .game-container {
-      text-align: center;
-      margin: 50px auto;
-      width: 80%;
-      max-width: 1000px;
-    }
-
-    .instructions {
-      margin-top: 20px; /* Space between instructions and top content */
-      margin-bottom: 20px;
-      font-size: 20px;
-      font-weight: bold;
+    body {
+      background-color: #f4f7fc;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       color: #333;
     }
 
-    .maze-wrapper {
+    .game-container {
+      text-align: center;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .instructions {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    .game-wrapper {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -117,17 +145,16 @@ block content
       margin-top: 20px;
     }
 
-    /* Maze Grid Styling */
-    #maze-container {
+    /* Game Grid Styling */
+    #game-container {
       display: grid;
       grid-template-columns: repeat(10, 30px);
       grid-gap: 5px;
-      margin-top: 20px;
       justify-content: center;
       margin-bottom: 30px;
     }
 
-    .maze-cell {
+    .game-cell {
       width: 30px;
       height: 30px;
       display: flex;
@@ -149,6 +176,11 @@ block content
       color: white;
     }
 
+    .obstacle {
+      background-color: #000;
+      color: white;
+    }
+
     .empty {
       background-color: #ffffff;
     }
@@ -159,8 +191,8 @@ block content
 
     /* Button Styling */
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 12px 24px;
+      font-size: 18px;
       margin: 5px;
       cursor: pointer;
       background-color: #008CBA;
@@ -179,14 +211,14 @@ block content
       .game-container {
         width: 90%;
       }
-      
-      #maze-container {
+
+      #game-container {
         grid-template-columns: repeat(8, 30px);
       }
     }
 
     @media (max-width: 480px) {
-      #maze-container {
+      #game-container {
         grid-template-columns: repeat(6, 30px);
       }
     }

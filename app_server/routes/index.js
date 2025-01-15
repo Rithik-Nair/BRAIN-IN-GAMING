@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
+const User = require('../models/user');  // Import User model
 
 // Route to render the index page (home) if already logged in
 router.get('/', (req, res) => {
@@ -16,20 +16,44 @@ router.get('/register', (req, res) => {
   res.render('register');  // Show the registration page
 });
 
-// Handle registration form submission
-router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-    // Create a new user in the database
-    const newUser = new User({ username, password });
-    await newUser.save();
+// Register route (POST)
+router.post('/register', (req, res) => {
+  const { name, username, email, password } = req.body;
 
-    // Redirect to login page after successful registration
-    res.redirect('/login');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error while registering the user');
+  // Check if all required fields are provided
+  if (!name || !username || !email || !password) {
+    return res.status(400).send('All fields are required');
   }
+
+  // Check if email or username already exists
+  User.findOne({ $or: [{ email }, { username }] })
+    .then((existingUser) => {
+      if (existingUser) {
+        return res.status(400).send('Username or Email already exists');
+      }
+
+      // Create a new user
+      const newUser = new User({
+        name: name,
+        username: username,
+        email: email,
+        password: password  // Password will be stored as plain text
+      });
+
+      // Save the user to the database
+      newUser.save()
+        .then(user => {
+          res.redirect('/login');  // Redirect to login page after successful registration
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(500).send('Error registering user');
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error checking existing user');
+    });
 });
 
 // Route to render the login page
@@ -43,9 +67,14 @@ router.post('/login', async (req, res) => {
 
   try {
     // Check if the user exists in the database
-    const user = await User.findOne({ username: username, password: password });
+    const user = await User.findOne({ username: username });
 
     if (!user) {
+      return res.status(400).send('Incorrect credentials');
+    }
+
+    // Compare the entered password with the stored plain password
+    if (user.password !== password) {
       return res.status(400).send('Incorrect credentials');
     }
 
@@ -79,6 +108,19 @@ router.get('/about', (req, res) => {
   }
 });
 
+// Route to render the profile page
+router.get('/profile', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');  // Redirect to login if not logged in
+  }
+
+  // Retrieve user data from session or database
+  const user = req.session.user;
+
+  // Render the profile page with user data
+  res.render('profile', { user });
+});
+
 // Logout route to destroy session and redirect to index page
 router.get('/auth/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -93,6 +135,18 @@ router.get('/auth/logout', (req, res) => {
 // Game route for Neuro Dash
 router.get('/games/neurodash', (req, res) => {
   res.render('neurodash');  // Render the neurodash game page
+});
+
+router.get('/games/mindmaze', function(req, res, next) {
+  res.render('mindmaze');
+});
+
+router.get('/games/brainbeats', function(req, res, next) {
+  res.render('brainbeats');
+});
+
+router.get('/games/cerebralcrossing', function(req, res, next) {
+  res.render('cerebralcrossing');
 });
 
 // 404 route for any unknown paths

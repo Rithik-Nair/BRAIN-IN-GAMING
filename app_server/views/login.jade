@@ -5,12 +5,12 @@ block content
     .navbar
       .menu-container
         h1 Brain in Gaming
-  
+
   .main-container
     .hero-section
-      h1 Ready to Control Games with Your Mind?
+      h1 Login to Your Account
       p Enter your username and password to start your brain-controlled gaming adventure. If you don't have an account, register now!
-    
+
     .login-box
       h2 Login to Your Account
       form(action='/login', method='POST')
@@ -24,10 +24,10 @@ block content
             input(type='password', name='password', id='password', required, placeholder='Enter your password')
             label
               input(type='checkbox', id='show-password') Show Password
-            
+
           button(type='submit', class='btn btn-primary') Login
-      
-      p If you don't have an account, 
+
+      p Don't have an account? 
         a(href='/register') Register here
 
   footer
@@ -44,7 +44,7 @@ block content
 
   p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
 
-  // Place your script at the end of the body
+  // Script to handle password visibility toggle
   script.
     document.getElementById('show-password').addEventListener('change', function() {
       var passwordField = document.getElementById('password');

@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const passport = require('passport'); // For user authentication
+const passport = require('passport');
 const path = require('path');
+const User = require('./app_server/models/user');  // Import the User model
 const app = express();
 
 // Middleware for parsing request bodies
@@ -39,28 +40,82 @@ app.use('/', indexRoutes);  // Use the index.js routes for handling "/" and othe
 
 // Home route (root)
 app.get('/', (req, res) => {
-  // If the user is not logged in, render index.jade
   if (!req.session.user) {
     res.render('index');  // Renders 'index.jade'
   } else {
-    res.redirect('/home');  // If logged in, redirect to /home (you can change this if needed)
+    res.redirect('/home');  // If logged in, redirect to /home
   }
 });
 
-// Login route
+// Login route (GET)
 app.get('/login', (req, res) => {
   res.render('login');  // Render login page
 });
 
-// Register route
+// Login route (POST)
+app.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  // Find user by username
+  User.findOne({ username: username })
+    .then(user => {
+      if (!user) {
+        return res.status(400).send('Invalid username or password');
+      }
+
+      // Compare the entered password with the stored hash
+      user.comparePassword(password, (err, isMatch) => {
+        if (err || !isMatch) {
+          return res.status(400).send('Invalid username or password');
+        }
+
+        // Store user data in session
+        req.session.user = user;
+        res.redirect('/home');
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Server error occurred');
+    });
+});
+
+// Register route (GET)
 app.get('/register', (req, res) => {
   res.render('register');  // Render registration page
 });
 
-// Profile route
+// Register route (POST)
+app.post('/register', (req, res) => {
+  const { username, email, password } = req.body;
+
+  // Check if all required fields are provided
+  if (!username || !email || !password) {
+    return res.status(400).send('All fields are required');
+  }
+
+  // Create a new user
+  const newUser = new User({
+    username: username,
+    email: email,
+    password: password // Password will be hashed before saving due to middleware in the User schema
+  });
+
+  // Save the user to the database
+  newUser.save()
+    .then(user => {
+      res.redirect('/login');  // Redirect to login page after successful registration
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error registering user');
+    });
+});
+
+// Profile route (GET)
 app.get('/profile', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.render('profile', { user: req.user });
+  if (req.session.user) {
+    res.render('profile', { user: req.session.user });
   } else {
     res.redirect('/login');  // If not authenticated, redirect to login page
   }
@@ -68,7 +123,11 @@ app.get('/profile', (req, res) => {
 
 // Logout route
 app.get('/auth/logout', (req, res) => {
-  req.logout(() => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Error during logout:', err);
+      return res.send('Error while logging out');
+    }
     res.redirect('/');  // Redirect to index.jade after logout
   });
 });
@@ -78,9 +137,24 @@ app.get('/games/neurodash', (req, res) => {
   res.render('neurodash'); // This will render the neurodash.jade file
 });
 
+// Game route for Mind Maze
+app.get('/games/mindmaze', (req, res) => {
+  res.render('mindmaze'); // This will render the mindmaze.jade file
+});
+
+// Game route for Brain Beats
+app.get('/games/brainbeats', (req, res) => {
+  res.render('brainbeats'); // This will render the brainbeats.jade file
+});
+
+// Game route for Cerebral Crossing
+app.get('/games/cerebralcrossing', (req, res) => {
+  res.render('cerebralcrossing'); // This will render the cerebralcrossing.jade file
+});
+
 // 404 route (catch all unknown routes)
 app.use((req, res, next) => {
-  res.status(404).send('Page not found!');
+  res.status(404).send('Sorry, we couldn’t find that page!');
 });
 
 // Start the server

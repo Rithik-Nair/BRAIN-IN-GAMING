@@ -1,0 +1,161 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Mind Maze Game
+    style.
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #111;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+        overflow: hidden;
+      }
+
+      #game-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .card {
+        width: 100px;
+        height: 150px;
+        background-color: #222;
+        margin: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .card:hover {
+        transform: scale(1.1);
+      }
+
+      .card.selected {
+        background-color: #28a745;
+      }
+
+      #score {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 20px;
+        font-weight: bold;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px;
+        border-radius: 10px;
+        z-index: 10;
+      }
+
+      #play-again {
+        position: absolute;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        background-color: #28a745;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        display: none;
+        z-index: 10;
+      }
+
+      #play-again:hover {
+        background-color: #218838;
+      }
+
+      #game-over {
+        position: absolute;
+        top: 30%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+        font-weight: bold;
+        color: red;
+        display: none;
+        z-index: 10;
+      }
+  body
+    #score Score: 0
+    button#play-again(onclick="restartGame()") Play Again
+    div#game-container
+      // Cards will be dynamically generated here
+    div#game-over Game Over! You lost!
+    script.
+      const gameContainer = document.getElementById('game-container');
+      const scoreDisplay = document.getElementById('score');
+      const playAgainButton = document.getElementById('play-again');
+      const gameOverDisplay = document.getElementById('game-over');
+      
+      let score = 0;
+      let selectedCards = [];
+      let totalCards = 12; // Number of cards in the game
+
+      // Function to create cards
+      function createCards() {
+        for (let i = 0; i < totalCards; i++) {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.dataset.cardId = i;
+          card.innerText = 'Card ' + (i + 1);
+
+          card.addEventListener('click', () => {
+            toggleCardSelection(card);
+          });
+
+          gameContainer.appendChild(card);
+        }
+      }
+
+      // Function to toggle card selection
+      function toggleCardSelection(card) {
+        if (card.classList.contains('selected')) {
+          card.classList.remove('selected');
+          selectedCards = selectedCards.filter(id => id !== card.dataset.cardId);
+        } else {
+          card.classList.add('selected');
+          selectedCards.push(card.dataset.cardId);
+        }
+
+        checkGameStatus();
+      }
+
+      // Function to check if the game is won or lost
+      function checkGameStatus() {
+        if (selectedCards.length === totalCards) {
+          gameOverDisplay.style.display = 'block';
+          gameOverDisplay.innerText = `Game Over! You won with a score of: ${score}`;
+          playAgainButton.style.display = 'block';
+        }
+      }
+
+      // Function to restart the game
+      function restartGame() {
+        gameOverDisplay.style.display = 'none';
+        playAgainButton.style.display = 'none';
+        selectedCards = [];
+        score = 0;
+        scoreDisplay.innerText = 'Score: ' + score;
+        gameContainer.innerHTML = '';
+        createCards();
+      }
+
+      createCards();
