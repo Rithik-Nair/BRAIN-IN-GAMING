@@ -74,13 +74,84 @@ html(lang="en")
         margin-top: 20px;
       }
 
+      /* Point meter styles */
+      #point-meter {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      /* Feedback message styles */
+      #feedback {
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      /* Chances meter styles */
+      #chances-meter {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      /* Modal styles */
+      #game-over-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        text-align: center;
+      }
+
+      #game-over-modal button {
+        margin-top: 15px;
+        background-color: #607d8b;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      #game-over-modal button:hover {
+        background-color: #3e4a52;
+      }
+
+      /* Modal overlay */
+      #modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
   body
     h1 Mind Maze - Card Game
+    #point-meter Points: 0
+    #chances-meter Chances Left: 5
+    #feedback
     .button-container
       button.back(onclick="window.location.href='/'") Back to Home
       button.start(onclick="startGame()") Start Game
     div#card-deck
       // Empty at the start, will be populated by JavaScript
+
+    // Modal structure for Game Over
+    div#modal-overlay
+    div#game-over-modal
+      h2 Game Over!
+      p Your score: <span id="final-score">0</span>
+      button(onclick="resetGame()") Play Again
 
     script.
       // Example array of cards
@@ -109,7 +180,11 @@ html(lang="en")
 
       // Start game function
       function startGame() {
-        // Shuffle the cards
+        points = 0; // Reset points at the start of the game
+        chances = 5; // Set the number of chances
+        updatePoints();
+        updateChances();
+        updateFeedback('');
         shuffle(cards);
         const cardDeck = document.getElementById('card-deck');
         cardDeck.innerHTML = ''; // Clear existing cards
@@ -130,8 +205,12 @@ html(lang="en")
       // Function to flip the card
       let flippedCards = [];
       let points = 0;
+      let chances = 5; // Number of chances
+      let canFlip = true; // Prevent flipping during card match check
 
       function flipCard(cardElement) {
+        if (!canFlip || chances <= 0) return; // Prevent flipping if cards are being checked or no chances left
+        
         const imgElement = cardElement.querySelector('img');
         
         // Check if the card is already flipped
@@ -143,6 +222,7 @@ html(lang="en")
         flippedCards.push({ cardElement, imgElement });
         
         if (flippedCards.length === 2) {
+          canFlip = false; // Disable flipping new cards until the current check is done
           checkMatch();
         }
       }
@@ -152,14 +232,55 @@ html(lang="en")
         
         if (firstCard.imgElement.src === secondCard.imgElement.src) {
           points++;
-          flippedCards = [];
+          updatePoints();
+          updateFeedback('Correct!');
+          flippedCards = []; // Reset flipped cards
+          canFlip = true; // Enable flipping again
         } else {
+          updateFeedback('Wrong!');
+          chances--; // Decrease chances on wrong match
+          updateChances();
           setTimeout(() => {
-            firstCard.imgElement.style.display = 'none';
+            firstCard.imgElement.style.display = 'none'; // Hide both cards
             secondCard.imgElement.style.display = 'none';
-            flippedCards = [];
+            flippedCards = []; // Reset flipped cards
+            canFlip = true; // Enable flipping again
           }, 1000);
         }
 
-        console.log('Points:', points);
+        // Game over if chances are exhausted
+        if (chances <= 0) {
+          gameOver();
+        }
+      }
+
+      function updatePoints() {
+        const pointMeter = document.getElementById('point-meter');
+        pointMeter.textContent = 'Points: ' + points;
+      }
+
+      function updateChances() {
+        const chancesMeter = document.getElementById('chances-meter');
+        chancesMeter.textContent = 'Chances Left: ' + chances;
+      }
+
+      function updateFeedback(message) {
+        const feedbackElement = document.getElementById('feedback');
+        feedbackElement.textContent = message;
+      }
+
+      function gameOver() {
+        updateFeedback('Game Over!');
+        setTimeout(() => {
+          // Show modal
+          document.getElementById('final-score').textContent = points;
+          document.getElementById('game-over-modal').style.display = 'block';
+          document.getElementById('modal-overlay').style.display = 'block';
+        }, 1000);
+      }
+
+      function resetGame() {
+        document.getElementById('game-over-modal').style.display = 'none';
+        document.getElementById('modal-overlay').style.display = 'none';
+        startGame();
       }

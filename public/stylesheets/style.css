@@ -439,3 +439,105 @@ button[type="submit"]:hover {
   text-decoration: none;
   transition: background-color 0.3s ease;
 }
+.point-meter-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.point-meter {
+  width: 80%;
+  background-color: #ddd;
+  border-radius: 25px;
+  overflow: hidden;
+  height: 30px;
+  margin-bottom: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.point-bar {
+  height: 100%;
+  width: 0;
+  background-color: #007bff;
+  border-radius: 25px;
+  transition: width 0.3s ease;
+}
+
+.points-display {
+  font-size: 1.2em;
+  color: #444;
+}
+/* Profile Box Container */
+.profile-box {
+  width: 350px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Profile Image */
+.profile-box .profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  object-fit: cover; /* Ensures the image fits within the circle */
+  border: 3px solid #ff6347;
+  transition: all 0.3s ease;
+}
+
+.profile-box .profile-image:hover {
+  transform: scale(1.1);
+}
+
+/* Profile Name */
+.profile-box .profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* Profile Info (e.g., Email, Username) */
+.profile-box .profile-info {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.profile-box .edit-button,
+.profile-box .logout-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff6347;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0;
+  transition: background-color 0.3s ease;
+}
+
+.profile-box .edit-button:hover,
+.profile-box .logout-button:hover {
+  background-color: #ff4500;
+}
+
+.profile-box .edit-button:focus,
+.profile-box .logout-button:focus {
+  outline: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-box {
+    width: 80%;
+  }
+}

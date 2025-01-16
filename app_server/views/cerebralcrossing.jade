@@ -1,224 +1,297 @@
-extends layout
-
-block content
-  // Page Title
-  h1(style="margin-top:100px; color: #4CAF50; font-family: 'Arial', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);") Cerebral Crossing - Puzzle Game
-  .game-container
-    // Instructions (Cross the obstacles message)
-    .instructions
-      p#instructions(style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 20px;") Cross the obstacles to reach the goal!
-
-    // Game Grid
-    .game-wrapper
-      #game-container
-        // Placeholder for game elements (Obstacles & Goal)
-
-    // Buttons below the game grid
-    .buttons-wrapper
-      button#start-button(onclick="startGame()") Start Game
-      button#reset-button(onclick="resetGame()") Reset Game
-
-  script.
-    let game;
-    let gameSize = 10;  // Set grid size (10x10 for example)
-    let goalReached = false;
-
-    // Function to start the game
-    function startGame() {
-      document.getElementById("instructions").textContent = "Cross the obstacles to reach the goal!";
-      game = generateGameGrid(gameSize);
-      displayGameGrid(game);
-      goalReached = false;
-    }
-
-    // Function to reset the game
-    function resetGame() {
-      document.getElementById("instructions").textContent = "Cross the obstacles to reach the goal!";
-      goalReached = false;
-      displayGameGrid(game);
-    }
-
-    // Function to generate game grid with obstacles and goal
-    function generateGameGrid(size) {
-      let grid = Array.from({ length: size }, () => Array(size).fill(0));
-      grid[0][0] = 1; // Start point
-      grid[size - 1][size - 1] = 2; // Goal point
-      // Random obstacle generation (you can improve with more complex logic)
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          if (Math.random() < 0.2 && (i !== 0 || j !== 0) && (i !== size - 1 || j !== size - 1)) {
-            grid[i][j] = 3; // Obstacle point
-          }
-        }
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Cerebral Crossing - Crossword Puzzle Game
+    style.
+      /* General body styles */
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f0f0f0;
+        color: #000;
+        margin: 0;
+        padding: 20px;
       }
-      return grid;
-    }
 
-    // Function to display the game grid
-    function displayGameGrid(grid) {
-      const container = document.getElementById("game-container");
-      container.innerHTML = ""; // Clear previous grid
+      /* Crossword grid styles */
+      .crossword-grid {
+        display: grid;
+        grid-template-columns: repeat(10, 40px); /* Adjust columns as per your grid size */
+        grid-template-rows: repeat(10, 40px); /* Adjust rows as per your grid size */
+        gap: 5px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
 
-      grid.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
-          const cellElement = document.createElement("div");
-          cellElement.className = "game-cell";
-          if (cell === 1) {
-            cellElement.classList.add("start");  // Start point
-            cellElement.textContent = "S";
-          } else if (cell === 2) {
-            cellElement.classList.add("goal");  // Goal point
-            cellElement.textContent = "G";
-          } else if (cell === 3) {
-            cellElement.classList.add("obstacle");  // Obstacle point
-          } else {
-            cellElement.classList.add("empty");
-          }
-          container.appendChild(cellElement);
+      .crossword-cell {
+        width: 40px;
+        height: 40px;
+        border: 1px solid #000;
+        text-align: center;
+        font-size: 18px;
+        background-color: #fff;
+        outline: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .crossword-cell:focus {
+        background-color: #dcdcdc;
+      }
+
+      /* Black cells (where no letters can be typed) */
+      .crossword-cell.black {
+        background-color: #000;
+        color: #000;
+        border: none;
+        cursor: not-allowed;
+      }
+
+      /* Button container for back and start buttons */
+      .button-container {
+        margin-bottom: 20px;
+      }
+
+      button.back, button.start {
+        color: #fff;
+        background: #607d8b;
+        border: none;
+        border-radius: 8px;
+        padding: 15px 25px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-right: 10px;
+      }
+
+      button.back:hover, button.start:hover {
+        background: #3e4a52;
+      }
+
+      /* Clue styles */
+      .clue-list {
+        text-align: left;
+        font-size: 18px;
+        margin-top: 20px;
+        display: inline-block;
+        max-width: 300px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .clue-item {
+        margin: 10px 0;
+      }
+
+      /* Point meter styles */
+      #point-meter {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      /* Modal styles */
+      #game-over-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        text-align: center;
+      }
+
+      #game-over-modal button {
+        margin-top: 15px;
+        background-color: #607d8b;
+        color: #fff;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      #game-over-modal button:hover {
+        background-color: #3e4a52;
+      }
+
+      /* Modal overlay */
+      #modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+
+  body
+    h1 Cerebral Crossing - Crossword Puzzle Game
+    #point-meter Points: 0
+    #chances-left Chances Left: 5
+    .button-container
+      button.back(onclick="window.location.href='/'") Back to Home
+      button.start(onclick="startGame()") Start Game
+    div#crossword-container
+      div.crossword-grid
+        // Empty at the start, will be populated by JavaScript
+    div.clue-list
+      h3 Clues
+      div#clues
+        // Clues will be listed here
+    div#modal-overlay
+    div#game-over-modal
+      h2 Game Over!
+      p Your score: <span id="final-score">0</span>
+      button(onclick="resetGame()") Play Again
+
+    script.
+      // Example crossword data
+      const crossword = {
+        grid: [
+          ['A', 'P', 'P', 'L', 'E', '', '', '', '', ''],
+          ['', '', '', 'P', '', '', 'B', 'A', 'N', 'A'],
+          ['', '', '', 'P', '', '', '', '', '', ''],
+          ['P', 'A', 'R', 'K', 'E', 'R', '', '', '', ''],
+          ['', '', '', 'E', '', '', '', '', '', ''],
+          ['', '', '', 'D', '', '', '', '', '', ''],
+          ['', '', '', 'R', '', '', '', '', '', ''],
+          ['B', 'A', 'C', 'K', 'E', 'R', '', '', '', ''],
+          ['', '', '', 'K', '', '', '', '', '', ''],
+          ['', '', '', 'E', '', '', '', '', '', '']
+        ],
+        clues: {
+          across: [
+            { number: 1, clue: 'A fruit', answer: 'APPLE' },
+            { number: 4, clue: 'An occupation', answer: 'PARKER' },
+            { number: 7, clue: 'A baker', answer: 'BAKER' }
+          ],
+          down: [
+            { number: 1, clue: 'A fruit', answer: 'APPLE' },
+            { number: 2, clue: 'An occupation', answer: 'PARKER' },
+            { number: 5, clue: 'A baker', answer: 'BAKER' }
+          ]
+        }
+      };
+
+      let points = 0;
+      let correctAnswers = 0;
+      let chancesLeft = 5; // Limit the number of chances
+
+      // Start game function
+      function startGame() {
+        points = 0;
+        correctAnswers = 0;
+        chancesLeft = 5; // Reset chances
+        updatePoints();
+        generateCrosswordGrid();
+        generateClues();
+        updateChances();
+      }
+
+      // Generate crossword grid dynamically
+      function generateCrosswordGrid() {
+        const gridContainer = document.querySelector('.crossword-grid');
+        gridContainer.innerHTML = ''; // Clear the existing grid
+        crossword.grid.forEach((row, rowIndex) => {
+          row.forEach((cell, colIndex) => {
+            const cellElement = document.createElement('input');
+            cellElement.type = 'text';
+            cellElement.maxLength = 1;
+            cellElement.classList.add('crossword-cell');
+            
+            if (cell === '') {
+              // Apply the 'black' class to empty cells
+              cellElement.classList.add('black');
+            } else {
+              cellElement.setAttribute('data-correct', cell); // Store correct answer in a custom attribute
+            }
+
+            // Add event listener to check answer when typing
+            cellElement.addEventListener('input', checkAnswer);
+
+            gridContainer.appendChild(cellElement);
+          });
         });
-      });
-    }
+      }
 
-    // Add event listeners for game interactions (e.g., clicking on cells to check the path)
-    document.getElementById("game-container").addEventListener("click", (event) => {
-      const target = event.target;
-      if (target.classList.contains("game-cell") && !goalReached) {
-        // Handle cell click (you could implement path checking logic here)
-        if (target.classList.contains("obstacle")) {
-          target.classList.add("visited");
-          document.getElementById("instructions").textContent = "Oops! You hit an obstacle.";
-        } else if (target.classList.contains("goal")) {
-          goalReached = true;
-          document.getElementById("instructions").textContent = "Congratulations! You've reached the goal!";
-        } else {
-          target.classList.add("visited");
+      // Generate clue list dynamically
+      function generateClues() {
+        const cluesContainer = document.getElementById('clues');
+        cluesContainer.innerHTML = '';
+        crossword.clues.across.forEach(clue => {
+          const clueElement = document.createElement('div');
+          clueElement.classList.add('clue-item');
+          clueElement.textContent = `Across ${clue.number}: ${clue.clue}`;
+          cluesContainer.appendChild(clueElement);
+        });
+        crossword.clues.down.forEach(clue => {
+          const clueElement = document.createElement('div');
+          clueElement.classList.add('clue-item');
+          clueElement.textContent = `Down ${clue.number}: ${clue.clue}`;
+          cluesContainer.appendChild(clueElement);
+        });
+      }
+
+      // Check the crossword answers when the user types in a cell
+      function checkAnswer(event) {
+        const cell = event.target;
+        const correctAnswer = cell.getAttribute('data-correct');
+        const userAnswer = cell.value.toUpperCase();
+        
+        if (userAnswer === correctAnswer) {
+          cell.style.backgroundColor = '#90EE90'; // Green for correct
+          points++; // Add points for correct answer
+          correctAnswers++;
+        } else if (userAnswer !== '') {
+          cell.style.backgroundColor = '#FFCCCB'; // Red for incorrect
+          points--; // Deduct points for incorrect answer
+          chancesLeft--; // Deduct a chance for wrong answer
+          updateChances();
+        }
+
+        updatePoints(); // Update points after each input
+
+        // Check if all answers are correct (game over condition)
+        if (correctAnswers === crossword.clues.across.length + crossword.clues.down.length) {
+          gameOver();
+        }
+
+        // If chances run out, end the game
+        if (chancesLeft <= 0) {
+          gameOver();
         }
       }
-    });
 
-    // Initialize game
-    startGame();
-  </script>
-
-  style.
-    /* Layout Styling */
-    body {
-      background-color: #f4f7fc;
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #333;
-    }
-
-    .game-container {
-      text-align: center;
-      margin: 50px auto;
-      padding: 30px;
-      background-color: #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      max-width: 1200px;
-      width: 100%;
-    }
-
-    .instructions {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-    }
-
-    .game-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      margin-top: 30px;
-    }
-
-    .buttons-wrapper {
-      margin-top: 20px;
-    }
-
-    /* Game Grid Styling */
-    #game-container {
-      display: grid;
-      grid-template-columns: repeat(10, 30px);
-      grid-gap: 5px;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-
-    .game-cell {
-      width: 30px;
-      height: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #ccc;
-      cursor: pointer;
-      background-color: #f0f0f0;
-      transition: background-color 0.3s;
-    }
-
-    .start {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .goal {
-      background-color: #f44336;
-      color: white;
-    }
-
-    .obstacle {
-      background-color: #000;
-      color: white;
-    }
-
-    .empty {
-      background-color: #ffffff;
-    }
-
-    .visited {
-      background-color: #D3D3D3;
-    }
-
-    /* Button Styling */
-    button {
-      padding: 12px 24px;
-      font-size: 18px;
-      margin: 5px;
-      cursor: pointer;
-      background-color: #008CBA;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #007B9F;
-    }
-
-    /* Responsive Styling */
-    @media (max-width: 768px) {
-      .game-container {
-        width: 90%;
+      // Update points on the screen
+      function updatePoints() {
+        const pointMeter = document.getElementById('point-meter');
+        pointMeter.textContent = 'Points: ' + points;
       }
 
-      #game-container {
-        grid-template-columns: repeat(8, 30px);
+      // Update chances left on the screen
+      function updateChances() {
+        const chancesMeter = document.getElementById('chances-left');
+        chancesMeter.textContent = 'Chances Left: ' + chancesLeft;
       }
-    }
 
-    @media (max-width: 480px) {
-      #game-container {
-        grid-template-columns: repeat(6, 30px);
+      // Game over function
+      function gameOver() {
+        document.getElementById('final-score').textContent = points;
+        document.getElementById('game-over-modal').style.display = 'block';
+        document.getElementById('modal-overlay').style.display = 'block';
       }
-    }
+
+      // Reset game function
+      function resetGame() {
+        document.getElementById('game-over-modal').style.display = 'none';
+        document.getElementById('modal-overlay').style.display = 'none';
+        startGame();
+      }

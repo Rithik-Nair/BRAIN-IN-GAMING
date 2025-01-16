@@ -3,255 +3,279 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Neuro Dash Game
+    title Neuro Dash - Dino Game
     style.
+      /* General body styles */
       body {
+        font-family: 'Arial', sans-serif;
+        background: #f0f8ff;
+        text-align: center;
         margin: 0;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-        background-color: #111;
+        padding: 20px;
       }
 
-      canvas {
-        display: block;
+      /* Game container styles */
+      #game-container {
+        width: 100%;
+        height: 400px;
         margin: 0 auto;
-        background-color: #222;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        position: relative;
+        background: linear-gradient(to bottom, #fff, #e0e0e0);
+        overflow: hidden;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       }
 
-      #score {
+      /* Dinosaur styles */
+      #dino {
+        width: 50px;
+        height: 50px;
         position: absolute;
-        top: 20px;
-        left: 20px;
-        font-size: 20px;
-        font-weight: bold;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 10px;
-        border-radius: 10px;
-        z-index: 10;
+        bottom: 10px;
+        left: 50px;
+        background-color: #ff6347; /* Tomato color for the dino */
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transition: bottom 0.2s ease-out;
       }
 
-      #play-again, #view-report {
+      #dino .tail {
+        width: 20px;
+        height: 20px;
         position: absolute;
-        top: 60%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 15px 30px;
-        font-size: 18px;
-        font-weight: bold;
-        color: white;
-        background-color: #28a745;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        display: none;
-        z-index: 10;
+        bottom: 0;
+        left: 45px;
+        background-color: #ff4500; /* Orange tail */
+        border-radius: 50%;
       }
 
-      #play-again:hover, #view-report:hover {
-        background-color: #218838;
-      }
-
-      #concentration-meter {
+      /* Dinosaur legs */
+      #dino .leg {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #fff;
-        background: rgba(0, 0, 0, 0.6);
-        padding: 10px;
-        border-radius: 10px;
-        z-index: 10;
+        bottom: 0;
+        width: 8px;
+        height: 12px;
+        background-color: #ff4500;
+        border-radius: 3px;
       }
 
-      #concentration-bar {
-        width: 100px;
-        height: 10px;
-        background-color: #555;
+      #dino .leg.left {
+        left: 5px;
+      }
+
+      #dino .leg.right {
+        right: 5px;
+      }
+
+      /* Obstacles styles */
+      .obstacle {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        bottom: 10px;
+        background-color: #32cd32; /* Lime green for obstacles */
         border-radius: 5px;
-        margin-top: 5px;
+        animation: moveObstacle 1.5s infinite linear;
       }
 
-      #concentration-level {
-        height: 100%;
-        background-color: #00FF00;
-        border-radius: 5px;
+      .obstacle-1 {
+        background-color: #32cd32;
       }
 
-      .pulse {
-        animation: pulse 1s infinite;
+      .obstacle-2 {
+        background-color: #ff1493; /* Hot pink obstacles */
       }
 
-      @keyframes pulse {
+      .obstacle-3 {
+        background-color: #ffff00; /* Yellow obstacles */
+      }
+
+      /* Animation for obstacles */
+      @keyframes moveObstacle {
         0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
+          transform: translateX(100%);
         }
         100% {
-          transform: scale(1);
+          transform: translateX(-100%);
         }
       }
+
+      /* Start and Home buttons */
+      #start-button, #home-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #ff6347;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #start-button:hover, #home-button:hover {
+        background-color: #ff4500;
+      }
+
+      /* Game over modal styles */
+      #game-over-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        text-align: center;
+      }
+
+      #game-over-modal button {
+        margin-top: 15px;
+        background-color: #ff6347;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #game-over-modal button:hover {
+        background-color: #ff4500;
+      }
+
+      /* Score and instructions */
+      #score {
+        font-size: 24px;
+        color: #ff6347;
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        z-index: 10;
+      }
+
+      /* Instructions */
+      .instructions {
+        font-size: 18px;
+        color: #333;
+        margin: 10px 0;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      }
+
   body
-    #score Score: 0
-    button#play-again(onclick="restartGame()") Play Again
-    button#view-report(onclick="viewReport()") View Report
-    canvas#gameCanvas
-    #concentration-meter
-      | Concentration: 
-      #concentration-bar
-        #concentration-level(style="width: 75%;")
+    h1 Neuro Dash - Dino Game
+    div.instruction
+      p Press SPACE to jump!
+    div#score Points: 0
+    div#game-container
+      div#dino
+        div.tail
+        div.leg.left
+        div.leg.right
+    div#game-over-modal
+      h2 Game Over!
+      p Your score: <span id="final-score">0</span>
+      button(onclick="resetGame()") Play Again
+      button(id="home-button", onclick="goHome()") Back to Home
+    button(id="start-button", onclick="startGame()") Start Game
 
     script.
-      const canvas = document.getElementById("gameCanvas");
-      const ctx = canvas.getContext("2d");
-      canvas.width = window.innerWidth;
-      canvas.height = 300;
-
-      const groundHeight = 40;
-      const obstacles = [];
+      let dino = document.getElementById('dino');
+      let gameContainer = document.getElementById('game-container');
+      let scoreElement = document.getElementById('score');
+      let gameOverModal = document.getElementById('game-over-modal');
+      let finalScoreElement = document.getElementById('final-score');
+      let startButton = document.getElementById('start-button');
+      let homeButton = document.getElementById('home-button');
       let score = 0;
-      let gameSpeed = 5;
-      let isGameOver = false;
-      let concentrationLevel = 75;
+      let gameInterval, obstacleInterval;
+      let isJumping = false;
 
-      const player = {
-        x: 50,
-        y: canvas.height - groundHeight - 50,
-        width: 50,
-        height: 50,
-        dy: 0,
-        isJumping: false,
-      };
-
-      const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      skyGradient.addColorStop(0, "#222");
-      skyGradient.addColorStop(1, "#444");
-
-      const obstacleImages = [
-        "https://img.icons8.com/emoji/48/000000/alien-monster.png",
-        "https://img.icons8.com/emoji/48/000000/robot.png",
-        "https://img.icons8.com/emoji/48/000000/dog.png"
-      ];
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowUp" && !player.isJumping) {
-          player.isJumping = true;
-          player.dy = -12;
-        }
-      });
-
-      document.addEventListener("keyup", (e) => {
-        if (e.key === "ArrowDown") {
-          player.isJumping = false;
-        }
-      });
-
-      function addObstacle() {
-        const obstacle = {
-          x: canvas.width + Math.random() * 300,
-          y: canvas.height - groundHeight - 40,
-          width: 40,
-          height: 40,
-          image: new Image(),
-        };
-        obstacle.image.src = obstacleImages[Math.floor(Math.random() * obstacleImages.length)];
-        obstacles.push(obstacle);
+      // Function to start the game
+      function startGame() {
+        score = 0;
+        scoreElement.textContent = `Points: ${score}`;
+        gameOverModal.style.display = 'none';
+        createObstacles();
+        gameInterval = setInterval(moveObstacles, 20);
+        startButton.style.display = 'none';
       }
 
-      function isColliding(a, b) {
-        return (
-          a.x < b.x + b.width &&
-          a.x + a.width > b.x &&
-          a.y < b.y + b.height &&
-          a.y + a.height > b.y
-        );
+      // Create obstacles randomly
+      function createObstacles() {
+        obstacleInterval = setInterval(function() {
+          const obstacleType = ['obstacle-1', 'obstacle-2', 'obstacle-3'][Math.floor(Math.random() * 3)];
+          const obstacle = document.createElement('div');
+          obstacle.classList.add('obstacle', obstacleType);
+          obstacle.style.left = '100%';
+          gameContainer.appendChild(obstacle);
+        }, 1500);
       }
 
-      function updateConcentration() {
-        if (!isGameOver) {
-          concentrationLevel = Math.max(0, concentrationLevel - 0.1);
-          document.getElementById("concentration-level").style.width = `${concentrationLevel}%`;
-        }
-      }
-
-      function gameLoop() {
-        if (isGameOver) return;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = skyGradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = "#228B22";
-        ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
-
-        if (player.isJumping) {
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        player.y += player.dy;
-        if (player.y + player.height >= canvas.height - groundHeight) {
-          player.y = canvas.height - groundHeight - player.height;
-          player.dy = 0;
-          player.isJumping = false;
-        } else {
-          player.dy += 0.5;
-        }
-
-        obstacles.forEach((obstacle, index) => {
-          ctx.drawImage(obstacle.image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-          obstacle.x -= gameSpeed;
-
-          if (obstacle.x + obstacle.width < 0) {
-            obstacles.splice(index, 1);
+      // Move obstacles
+      function moveObstacles() {
+        const obstacles = document.querySelectorAll('.obstacle');
+        obstacles.forEach(obstacle => {
+          const currentLeft = parseFloat(obstacle.style.left);
+          if (currentLeft <= -40) {
+            obstacle.remove(); // Remove obstacles that have passed the screen
             score++;
-            if (score % 10 === 0) gameSpeed += 1;
+            scoreElement.textContent = `Points: ${score}`;
+          } else {
+            obstacle.style.left = `${currentLeft - 2}%`;
           }
 
-          if (isColliding(player, obstacle)) {
-            isGameOver = true;
-            document.getElementById("play-again").style.display = "block";
-            document.getElementById("view-report").style.display = "block";
-            document.getElementById("concentration-meter").classList.add("pulse");
+          // Collision detection
+          if (collisionDetection(dino, obstacle)) {
+            gameOver();
           }
         });
-
-        document.getElementById("score").innerText = `Score: ${score}`;
-
-        updateConcentration();
-
-        requestAnimationFrame(gameLoop);
       }
 
-      function spawnObstacles() {
-        if (!isGameOver) {
-          addObstacle();
-          setTimeout(spawnObstacles, Math.random() * 2000 + 1000);
+      // Collision detection between dino and obstacle
+      function collisionDetection(dino, obstacle) {
+        const dinoRect = dino.getBoundingClientRect();
+        const obstacleRect = obstacle.getBoundingClientRect();
+        return !(dinoRect.right < obstacleRect.left || 
+                 dinoRect.left > obstacleRect.right || 
+                 dinoRect.bottom < obstacleRect.top ||
+                 dinoRect.top > obstacleRect.bottom);
+      }
+
+      // Make the dino jump
+      document.addEventListener('keydown', function(event) {
+        if (event.keyCode === 32 && !isJumping) { // SPACE key
+          isJumping = true;
+          dino.style.bottom = '100px'; // Jump height
+          setTimeout(() => {
+            dino.style.bottom = '10px'; // Fall back down
+            isJumping = false;
+          }, 500); // Time to stay in the air
         }
+      });
+
+      // End game
+      function gameOver() {
+        clearInterval(gameInterval);
+        clearInterval(obstacleInterval);
+        finalScoreElement.textContent = score;
+        gameOverModal.style.display = 'block';
       }
 
-      function restartGame() {
+      // Reset game
+      function resetGame() {
         score = 0;
-        gameSpeed = 5;
-        isGameOver = false;
-        obstacles.length = 0;
-        concentrationLevel = 75;
-        document.getElementById("play-again").style.display = "none";
-        document.getElementById("view-report").style.display = "none";
-        document.getElementById("concentration-meter").classList.remove("pulse");
-        player.y = canvas.height - groundHeight - 50;
-        gameLoop();
-        spawnObstacles();
+        scoreElement.textContent = `Points: ${score}`;
+        startGame();
       }
 
-      function viewReport() {
-        alert(`Game Over! Your final score is: ${score}`);
+      // Go back to the home page
+      function goHome() {
+        window.location.href = '/'; // Modify this URL to your homepage
       }
 
-      gameLoop();
-      spawnObstacles();
+      // Show start game button
+      startButton.style.display = 'block';
