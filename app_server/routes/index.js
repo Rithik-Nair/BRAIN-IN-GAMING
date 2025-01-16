@@ -138,8 +138,25 @@ router.get('/games/neurodash', (req, res) => {
 });
 
 router.get('/games/mindmaze', function(req, res, next) {
-  res.render('mindmaze');
+  const cards = [
+    { name: 'Card 1', image: '/images/card1.jpg' },
+    { name: 'Card 2', image: '/images/card2.jpg' },
+    { name: 'Card 3', image: '/images/card3.jpg' },
+    { name: 'Card 4', image: '/images/card4.jpg' },
+    { name: 'Card 5', image: '/images/card5.jpg' },
+    { name: 'Card 6', image: '/images/card6.jpg' },
+    { name: 'Card 1', image: '/images/card1.jpg' },
+    { name: 'Card 2', image: '/images/card2.jpg' },
+    { name: 'Card 3', image: '/images/card3.jpg' },
+    { name: 'Card 4', image: '/images/card4.jpg' },
+    { name: 'Card 5', image: '/images/card5.jpg' },
+    { name: 'Card 6', image: '/images/card6.jpg' }
+  ];
+
+  // Pass the cards array to the mindmaze template
+  res.render('mindmaze', { cards: cards });
 });
+
 
 router.get('/games/brainbeats', function(req, res, next) {
   res.render('brainbeats');

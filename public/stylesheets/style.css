@@ -108,27 +108,51 @@ body {
   justify-content: center;
   gap: 35px;
   flex-wrap: wrap;
+  margin-top: 40px; /* Add margin if needed */
 }
 
 .game-box {
-  background-color: white;
-  padding: 35px;
+  background-color: #fff;
+  padding: 25px;
   border-radius: 12px;
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
-  width: 260px;
+  width: 250px; /* Adjust width for better fitting */
+  height: 300px; /* Set height for uniformity */
   text-align: center;
+  transition: transform 0.3s ease-in-out;
+  margin-bottom: 30px; /* Optional: add spacing between rows of boxes */
+  border: 2px solid #007bff; /* Adding a border to make it boxed */
+}
+
+.game-box:hover {
+  transform: translateY(-10px); /* Hover effect for lift */
 }
 
 .game-box h3 {
-  font-size: 1.6em;
-  margin-bottom: 12px;
+  font-size: 1.8em; /* Increased font size */
+  margin-bottom: 15px;
 }
 
 .game-box p {
   color: #777;
   font-size: 1.2em;
-  margin-bottom: 17px;
+  margin-bottom: 20px;
 }
+
+.game-box a {
+  padding: 12px 28px;
+  background-color: #007bff;
+  border-radius: 55px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.game-box a:hover {
+  background-color: #0056b3;
+  transform: scale(1.1); /* Hover effect for button */
+}
+
 
 .btn-primary {
   padding: 14px 32px;
@@ -407,116 +431,11 @@ button[type="submit"]:hover {
 .auth-box a {
   display: block;
   width: 100%;
-  padding: 14px 32px;
+  padding: 15px;
   margin-top: 15px;
-  font-size: 1.3em;
-  border-radius: 55px;
+  font-size: 1.2em;
+  border-radius: 6px;
   text-align: center;
   text-decoration: none;
   transition: background-color 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-}
-
-.btn-secondary {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background-color: #218838;
-}
-/* Register Box Styling */
-.register-box {
-  background-color: #fff;
-  padding: 45px;
-  border-radius: 12px;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
-  width: 100%;
-  max-width: 420px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.register-box h2 {
-  font-size: 2.2em;
-  color: #007bff;
-}
-
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 22px;
-}
-
-input[type="text"], input[type="password"] {
-  padding: 14px;
-  font-size: 1.1em;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  margin-top: 6px;
-}
-
-button[type="submit"] {
-  padding: 14px 32px;
-  font-size: 1.3em;
-  border-radius: 55px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-/* Style the "Show Password" checkbox */
-.form-group label {
-  font-size: 1.1em;
-  margin-top: 8px;
-  display: inline-block;
-}
-
-.form-group input[type="checkbox"] {
-  margin-top: 6px;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-.profile-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between;
-}
-
-.profile-box {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
-  flex: 1 1 calc(33.333% - 20px); /* Three boxes per row */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.profile-box h2 {
-  margin-top: 0;
-}
-
-.btn-secondary {
-  display: inline-block;
-  margin-top: 10px;
 }

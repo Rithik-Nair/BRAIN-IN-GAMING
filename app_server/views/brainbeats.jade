@@ -1,223 +1,139 @@
-extends layout
-
-block content
-  // Page Title
-  h1(style="margin-top:100px; color: #FF6347; font-family: 'Arial', sans-serif; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);") Brain Beats - Rhythm Game
-  .game-container
-    // Instructions (Follow the rhythm message)
-    .instructions
-      p#instructions(style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 20px;") Follow the rhythm to win!
-
-    // Game Grid (Rhythm Beats) with pulse effect
-    .game-wrapper
-      #game-container
-        // Placeholder for rhythm elements (beats and timing)
-
-    // Buttons below the game grid
-    .buttons-wrapper
-      button#start-button(onclick="startGame()") Start Game
-      button#reset-button(onclick="resetGame()") Reset Game
-
-  script.
-    let game;
-    let beatSequence = [];
-    let playerSequence = [];
-    let currentStep = 0;
-
-    // Function to start the game
-    function startGame() {
-      document.getElementById("instructions").textContent = "Follow the rhythm to win!";
-      beatSequence = generateBeatSequence();
-      playerSequence = [];
-      currentStep = 0;
-      displayGame(beatSequence);
-    }
-
-    // Function to reset the game
-    function resetGame() {
-      document.getElementById("instructions").textContent = "Follow the rhythm to win!";
-      playerSequence = [];
-      currentStep = 0;
-      displayGame(beatSequence);
-    }
-
-    // Function to generate beat sequence
-    function generateBeatSequence() {
-      let sequence = [];
-      for (let i = 0; i < 10; i++) {
-        sequence.push(Math.floor(Math.random() * 4)); // Random beat between 0 and 3
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Drum Pad
+    style.
+      /* Button styles */
+      button.pad {
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 30px 40px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.3s ease;
       }
-      return sequence;
-    }
 
-    // Function to display the game grid (beats)
-    function displayGame(sequence) {
-      const container = document.getElementById("game-container");
-      container.innerHTML = ""; // Clear previous sequence
+      /* Individual colors for each pad */
+      .kick {
+        background: #ff5722;
+      }
 
-      sequence.forEach((beat, index) => {
-        const beatElement = document.createElement("div");
-        beatElement.className = "beat-cell";
-        beatElement.dataset.index = index;
-        beatElement.classList.add("beat-" + beat);
-        container.appendChild(beatElement);
+      .snare {
+        background: #009688;
+      }
+
+      .hihat {
+        background: #3f51b5;
+      }
+
+      .clap {
+        background: #ffeb3b;
+      }
+
+      .bass {
+        background: #8bc34a;
+      }
+
+      .bassdrop {
+        background: #f44336; /* Red */
+      }
+
+      .riser {
+        background: #9c27b0; /* Purple */
+      }
+
+      .dubstep {
+        background: #607d8b; /* Blue-grey */
+      }
+
+      .build {
+        background: #ff9800; /* Orange */
+      }
+
+      /* Hover effect for buttons */
+      button.pad:hover {
+        background: #ff9800;
+      }
+
+      /* Active effect when button is clicked */
+      button.pad:active {
+        background: #e64a19;
+      }
+
+      /* General body styles */
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f0f0f0;  /* Light background for testing */
+        color: #000;  /* Dark text for visibility */
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Drum pad container */
+      #drum-pad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 columns */
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      /* Back button style */
+      button.back {
+        color: #fff;
+        background: #607d8b; /* Blue-grey */
+        border: none;
+        border-radius: 8px;
+        padding: 15px 25px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        margin-bottom: 20px;
+      }
+
+      button.back:hover {
+        background: #3e4a52;
+      }
+
+  body
+    h1 Drum Pad
+    button.back(onclick="window.location.href='/'") Back to Home
+    div#drum-pad
+      button.pad.kick(data-sound="kick") Kick
+      button.pad.snare(data-sound="snare") Snare
+      button.pad.hihat(data-sound="hihat") Hi-Hat
+      button.pad.clap(data-sound="clap") Clap
+      button.pad.bass(data-sound="bass") Bass
+      button.pad.bassdrop(data-sound="bassdrop") Bass Drop
+      button.pad.riser(data-sound="riser") Riser
+      button.pad.dubstep(data-sound="dubstep") Dubstep
+      button.pad.build(data-sound="build") Build
+    script.
+      // List of DJ-related sounds and corresponding button classes
+      const soundMapping = {
+        kick: "/sounds/kick.mp3",
+        snare: "/sounds/snare.mp3",
+        hihat: "/sounds/hihat.mp3",
+        clap: "/sounds/clap.mp3",
+        bass: "/sounds/bass.mp3",
+        bassdrop: "/sounds/bassdrop.mp3",
+        riser: "/sounds/riser.mp3",
+        dubstep: "/sounds/dubstep.mp3",
+        build: "/sounds/build.mp3"
+      };
+
+      // Add event listeners to all buttons
+      const pads = document.querySelectorAll(".pad");
+      pads.forEach(pad => {
+        pad.addEventListener("click", () => {
+            const sound = soundMapping[pad.getAttribute("data-sound")];
+            if (sound) {
+                const audio = new Audio(sound);
+                audio.play();
+            }
+        });
       });
-    }
-
-    // Handle player input (clicking beats)
-    document.getElementById("game-container").addEventListener("click", (event) => {
-      const target = event.target;
-      if (target.classList.contains("beat-cell")) {
-        const clickedBeat = parseInt(target.dataset.index);
-        playerSequence.push(clickedBeat);
-
-        if (playerSequence[currentStep] !== clickedBeat) {
-          document.getElementById("instructions").textContent = "Oops! Wrong beat!";
-          resetGame();
-        } else {
-          currentStep++;
-          if (currentStep === beatSequence.length) {
-            document.getElementById("instructions").textContent = "Congratulations! You've followed the rhythm!";
-            setTimeout(startGame, 2000); // Restart game after 2 seconds
-          }
-        }
-      }
-    });
-
-    // Initialize game
-    startGame();
-  </script>
-
-  style.
-    /* Layout Styling */
-    body {
-      background-color: #f4f7fc;
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #333;
-    }
-
-    .game-container {
-      text-align: center;
-      margin: 50px auto;
-      padding: 30px;
-      background-color: #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      max-width: 1200px;
-      width: 100%;
-    }
-
-    .instructions {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-    }
-
-    .game-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      margin-top: 30px;
-    }
-
-    .buttons-wrapper {
-      margin-top: 20px;
-    }
-
-    /* Beat Elements Styling */
-    #game-container {
-      display: grid;
-      grid-template-columns: repeat(4, 50px);
-      grid-gap: 20px;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-
-    .beat-cell {
-      width: 50px;
-      height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 50%;
-      cursor: pointer;
-      background-color: #f0f0f0;
-      transition: background-color 0.3s;
-      animation: pulse 1s ease-out infinite;
-    }
-
-    .beat-0 {
-      background-color: #FF6347; /* Red */
-    }
-
-    .beat-1 {
-      background-color: #4CAF50; /* Green */
-    }
-
-    .beat-2 {
-      background-color: #008CBA; /* Blue */
-    }
-
-    .beat-3 {
-      background-color: #FFC107; /* Yellow */
-    }
-
-    .visited {
-      background-color: #D3D3D3;
-    }
-
-    /* Pulse Effect */
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-      100% {
-        transform: scale(1);
-      }
-    }
-
-    /* Button Styling */
-    button {
-      padding: 12px 24px;
-      font-size: 18px;
-      margin: 5px;
-      cursor: pointer;
-      background-color: #008CBA;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #007B9F;
-    }
-
-    /* Responsive Styling */
-    @media (max-width: 768px) {
-      .game-container {
-        width: 90%;
-      }
-
-      #game-container {
-        grid-template-columns: repeat(3, 50px);
-      }
-    }
-
-    @media (max-width: 480px) {
-      #game-container {
-        grid-template-columns: repeat(2, 50px);
-      }
-    }
