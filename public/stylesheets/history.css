@@ -1,0 +1,18 @@
+/* public/stylesheets/history.css */
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.history-entry {
+  margin-bottom: 40px;
+}
+
+.history-entry h3 {
+  color: #4CAF50;
+}
+
+canvas {
+  border: 1px solid #ccc;
+}

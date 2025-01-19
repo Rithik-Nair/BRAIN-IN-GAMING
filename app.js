@@ -7,6 +7,10 @@ const path = require('path');
 const User = require('./app_server/models/user');  // Import the User model
 const app = express();
 
+// Import the routes
+const indexRoutes = require('./app_server/routes/index');  // For home, login, logout, etc.
+const historyRoutes = require('./app_server/routes/history');  // Import history routes
+
 // Middleware for parsing request bodies
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,9 +38,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Import routes
-const indexRoutes = require('./app_server/routes/index'); // For home, login, logout, etc.
+// Use routes
 app.use('/', indexRoutes);  // Use the index.js routes for handling "/" and other routes
+app.use('/history', historyRoutes);  // Set up history routes
 
 // Home route (root)
 app.get('/', (req, res) => {
@@ -121,6 +125,47 @@ app.get('/profile', (req, res) => {
   }
 });
 
+// Edit profile page
+app.get('/editprofile', (req, res) => {
+  if (req.session.user) {
+    const successMessage = req.query.successMessage || '';
+    res.render('editprofile', { 
+      user: req.session.user,
+      successMessage: successMessage
+    });
+  } else {
+    res.redirect('/login');  // If not authenticated, redirect to login page
+  }
+});
+
+// Update profile route (POST)
+app.post('/editprofile', (req, res) => {
+  const { name, username, email, password } = req.body;
+
+  // Check if user is logged in
+  if (!req.session.user) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+
+  // Prepare the data to be updated (only non-empty fields should be updated)
+  const updateData = {};
+  if (name) updateData.name = name;
+  if (username) updateData.username = username;
+  if (email) updateData.email = email;
+  if (password) updateData.password = password; // You can hash password here before saving
+
+  // Update the profile in the database
+  User.findByIdAndUpdate(req.session.user._id, updateData, { new: true })
+    .then(updatedUser => {
+      req.session.user = updatedUser; // Update session with the new user data
+      res.redirect('/editprofile?successMessage=Profile updated successfully');
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ success: false, message: 'Error updating profile' });
+    });
+});
+
 // Logout route
 app.get('/auth/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -157,7 +202,6 @@ app.get('/games/mindmaze', (req, res) => {
   // Pass the cards array to the mindmaze template
   res.render('mindmaze', { cards: cards });
 });
-
 
 // Game route for Brain Beats
 app.get('/games/brainbeats', (req, res) => {

@@ -1,0 +1,60 @@
+extends layout
+
+block content
+  header
+    .navbar
+      .menu-container
+        h1 Brain in Gaming
+
+  .main-container
+    .hero-section
+      h1 Edit Your Profile
+      p Update your details and personalize your brain-controlled gaming experience.
+
+    .edit-profile-box
+      h2 Edit Profile
+      form(action='/editprofile', method='POST')
+        .form-container
+          .form-group
+            label(for='name') Name:
+            input(type='text', name='name', value=user.name, required, placeholder='Enter your name')
+
+          .form-group
+            label(for='username') Username:
+            input(type='text', name='username', value=user.username, required, placeholder='Enter your username')
+
+          .form-group
+            label(for='email') Email:
+            input(type='email', name='email', value=user.email, required, placeholder='Enter your email')
+
+          .form-group
+            label(for='password') New Password:
+            input(type='password', name='password', placeholder='Enter new password')
+
+          button(type='submit', class='btn btn-primary') Update Profile
+          a(href='/profile', class='btn btn-secondary') Back
+
+  footer
+    .footer-container
+      .footer-feature
+        h4 Brain-Controlled Gaming Experience
+        p Push the boundaries of gaming with the power of your mind.
+      .footer-feature
+        h4 Cutting-Edge AI Technology
+        p Experience next-level AI integration that enhances your gameplay.
+      .footer-feature
+        h4 Instant Feedback & Insights
+        p Get real-time performance analysis to help you improve your gaming skills.
+
+  p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
+
+  // Script to handle password visibility toggle
+  script.
+    document.getElementById('show-password').addEventListener('change', function() {
+      var passwordField = document.getElementById('password');
+      if (this.checked) {
+        passwordField.type = 'text';  // Show password
+      } else {
+        passwordField.type = 'password';  // Hide password
+      }
+    });

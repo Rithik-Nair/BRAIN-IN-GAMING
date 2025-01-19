@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');  // Import User model
+const User = require('../models/user');  // Import the User model
+const historyController = require('../controllers/historyController'); // Import the history controller
+
+// Route for history page
+router.get('/history', historyController.showHistory);  // Fixed: changed from getHistory to showHistory
 
 // Route to render the index page (home) if already logged in
 router.get('/', (req, res) => {
@@ -37,7 +41,7 @@ router.post('/register', (req, res) => {
         name: name,
         username: username,
         email: email,
-        password: password  // Password will be stored as plain text
+        password: password  // Password will be stored as plain text (consider hashing in future)
       });
 
       // Save the user to the database
@@ -121,6 +125,43 @@ router.get('/profile', (req, res) => {
   res.render('profile', { user });
 });
 
+// Edit profile GET route
+router.get('/editprofile', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');  // If not logged in, redirect to login page
+  }
+
+  const user = req.session.user;
+
+  // Render the Edit Profile page with user data, and pass successMessage if exists
+  res.render('editprofile', { 
+    user: user,
+    successMessage: req.query.successMessage || ''  // Pass successMessage if available
+  });
+});
+
+// Edit profile POST route
+router.post('/editprofile', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');  // If not logged in, redirect to login page
+  }
+
+  const { name, username, email } = req.body;
+  const userId = req.session.user._id;
+
+  // Find the user by ID and update the profile
+  User.findByIdAndUpdate(userId, { name, username, email }, { new: true })
+    .then(updatedUser => {
+      req.session.user = updatedUser;  // Update session with new data
+      // Redirect to the editprofile page with successMessage query param
+      res.redirect('/editprofile?successMessage=Profile updated successfully!');
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('Error updating profile');
+    });
+});
+
 // Logout route to destroy session and redirect to index page
 router.get('/auth/logout', (req, res) => {
   req.session.destroy((err) => {
@@ -137,6 +178,7 @@ router.get('/games/neurodash', (req, res) => {
   res.render('neurodash');  // Render the neurodash game page
 });
 
+// Route for Mind Maze game
 router.get('/games/mindmaze', function(req, res, next) {
   const cards = [
     { name: 'Card 1', image: '/images/card1.jpg' },
@@ -157,11 +199,12 @@ router.get('/games/mindmaze', function(req, res, next) {
   res.render('mindmaze', { cards: cards });
 });
 
-
+// Route for Brain Beats game
 router.get('/games/brainbeats', function(req, res, next) {
   res.render('brainbeats');
 });
 
+// Route for Cerebral Crossing game
 router.get('/games/cerebralcrossing', function(req, res, next) {
   res.render('cerebralcrossing');
 });

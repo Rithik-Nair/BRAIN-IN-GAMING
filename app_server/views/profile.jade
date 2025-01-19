@@ -30,7 +30,7 @@ block content
             span #{user.username}
           p Email: 
             span #{user.email}
-        a(href='/profile/edit', class='btn btn-secondary') Edit Profile
+        a(href='/editprofile', class='btn btn-secondary') Edit Profile
 
       .profile-box
         h2 Brain Activity Stats
@@ -41,15 +41,6 @@ block content
             span #{user.avgBrainActivityScore}%
           p High Score: 
             span #{user.highScore}
-
-      .profile-box
-        h2 Preferences
-        .preferences-info
-          p Preferred Game Mode: 
-            span #{user.preferredGameMode}
-          p Notification Settings: 
-            span #{user.notificationSettings}
-        a(href='/profile/settings', class='btn btn-secondary') Update Preferences
 
   footer
     .footer-container
