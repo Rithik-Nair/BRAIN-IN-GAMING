@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');  // Import the User model
-const historyController = require('../controllers/historyController'); // Import the history controller
+const historyController = require('../controllers/history');
 
 // Route for history page
-router.get('/history', historyController.showHistory);  // Fixed: changed from getHistory to showHistory
+router.get('/history', historyController.getHistory);
 
 // Route to render the index page (home) if already logged in
 router.get('/', (req, res) => {
