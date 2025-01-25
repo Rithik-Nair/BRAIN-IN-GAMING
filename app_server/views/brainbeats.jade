@@ -3,7 +3,7 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Drum Pad
+    title Drum Pad with Concentration Meter
     style.
       /* Button styles */
       button.pad {
@@ -99,9 +99,44 @@ html(lang="en")
         background: #3e4a52;
       }
 
+      /* Concentration meter styles */
+      #concentration-meter-container {
+        margin-top: 20px;
+        text-align: center;
+      }
+
+      #concentration-meter {
+        width: 100%;
+        max-width: 500px;
+        height: 25px;
+        background: #ddd;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 0 auto;
+      }
+
+      #concentration-bar {
+        height: 100%;
+        width: 0;
+        background: #4caf50; /* Green */
+        transition: width 0.5s ease;
+      }
+
+      #concentration-level {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
   body
-    h1 Drum Pad
+    h1 Drum Pad with Concentration Meter
     button.back(onclick="window.location.href='/'") Back to Home
+
+    div#concentration-meter-container
+      div#concentration-meter
+        div#concentration-bar
+      div#concentration-level Concentration: 0%
+
     div#drum-pad
       button.pad.kick(data-sound="kick") Kick
       button.pad.snare(data-sound="snare") Snare
@@ -112,6 +147,7 @@ html(lang="en")
       button.pad.riser(data-sound="riser") Riser
       button.pad.dubstep(data-sound="dubstep") Dubstep
       button.pad.build(data-sound="build") Build
+
     script.
       // List of DJ-related sounds and corresponding button classes
       const soundMapping = {
@@ -128,12 +164,38 @@ html(lang="en")
 
       // Add event listeners to all buttons
       const pads = document.querySelectorAll(".pad");
+      const concentrationBar = document.getElementById("concentration-bar");
+      const concentrationLevel = document.getElementById("concentration-level");
+      let concentrationScore = 0;
+
       pads.forEach(pad => {
         pad.addEventListener("click", () => {
-            const sound = soundMapping[pad.getAttribute("data-sound")];
-            if (sound) {
-                const audio = new Audio(sound);
-                audio.play();
+          const sound = soundMapping[pad.getAttribute("data-sound")];
+          if (sound) {
+            const audio = new Audio(sound);
+            audio.play();
+          }
+
+          // Update concentration score
+          concentrationScore += 10;
+          if (concentrationScore > 100) {
+            concentrationScore = 100;
+          }
+          updateConcentrationMeter();
+
+          // Decrease concentration over time
+          setTimeout(() => {
+            concentrationScore -= 5;
+            if (concentrationScore < 0) {
+              concentrationScore = 0;
             }
+            updateConcentrationMeter();
+          }, 1000);
         });
       });
+
+      // Function to update the concentration meter
+      function updateConcentrationMeter() {
+        concentrationBar.style.width = concentrationScore + "%";
+        concentrationLevel.textContent = `Concentration: ${concentrationScore}%`;
+      }

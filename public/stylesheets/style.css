@@ -918,3 +918,99 @@ button[type="submit"]:hover {
 .game-box .play-button:hover {
   background-color: #0056b3;
 }
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+#analysis-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+#summary p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+canvas {
+  max-width: 100%;
+  margin: 20px auto;
+}
+#analysis-container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+canvas {
+  margin-top: 10px;
+}
+#analysis-container {
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  margin-top: 20px;
+  font-size: 24px;
+}
+
+canvas, #heatmap, #engagementGauge, #focusGauge, #stressGauge {
+  margin-top: 20px;
+}
+.btn {
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.3s ease-in-out;
+  color: white;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #28a745;
+}
+
+.btn-secondary:hover {
+  background-color: #218838;
+}
+.shadow {
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.12);
+}
+
+.rounded {
+  border-radius: 12px;
+}
+* {
+  outline: none;
+}
+.box {
+  border: 2px solid #ccc;
+  padding: 10px; /* Reduced padding */
+  margin-bottom: 15px; /* Reduced margin */
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+  width: 90%; /* Adjust width */
+  max-width: 600px; /* Set a max width to prevent boxes from getting too large */
+  margin-left: auto;
+  margin-right: auto;
+}

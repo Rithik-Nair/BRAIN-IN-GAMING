@@ -1,0 +1,201 @@
+h1 Game Analysis
+
+div#analysis-container
+  div(class="box")
+    h2 Emotional States
+    <canvas id="emotionLineGraph" width="400" height="250"></canvas>
+  
+  div(class="box")
+    h2 Heat Maps (Performance-Based)
+    <div id="heatmap" style="height: 400px; width: 100%;"></div>
+
+  div(class="box")
+    h2 Brain Wave Activity Intensity
+    <canvas id="brainWaveBarChart" width="400" height="250"></canvas>
+  
+  div(class="box")
+    h2 Focus Level and Memory Recall Activity
+    <canvas id="focusRadarChart" width="400" height="250"></canvas>
+  
+  div(class="box")
+    h2 Dial Gauges (Engagement, Focus, Stress)
+    <div id="engagementGauge" style="width: 250px; height: 250px;"></div>
+    <div id="focusGauge" style="width: 250px; height: 250px;"></div>
+    <div id="stressGauge" style="width: 250px; height: 250px;"></div>
+
+  div(class="box")
+    h2 Real-Time Monitoring
+    <div id="realTimeData" class="real-time-data">Loading...</div>
+
+button(onclick="goHome()") Back to Home
+
+style.
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    padding: 0;
+    margin: 0;
+  }
+
+  #analysis-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .box {
+    margin-bottom: 40px;
+    border-radius: 8px;
+    padding: 25px;
+    background-color: #fafafa;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .box h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #444;
+  }
+
+  .real-time-data {
+    font-size: 20px;
+    font-weight: bold;
+    color: #4caf50;
+    padding: 15px;
+    background-color: #e8f5e9;
+    border-radius: 5px;
+    text-align: center;
+  }
+
+  button {
+    padding: 12px 25px;
+    background-color: #4caf50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+script.
+  // Function to establish WebSocket connection
+  function connectWebSocket() {
+    const socket = new WebSocket('ws://your-server-url'); // Replace with your WebSocket server URL
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established.');
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const liveData = JSON.parse(event.data); // Parse the received data
+        console.log('Live BCI Data:', liveData);
+
+        // Update all visualizations here
+        updateVisualizations(liveData);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.warn('WebSocket connection closed. Reconnecting...');
+      setTimeout(connectWebSocket, 5000); // Attempt to reconnect after 5 seconds
+    };
+
+    socket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
+  }
+
+  // Function to update all visualizations
+  function updateVisualizations(liveData) {
+    // Update Emotional States Line Graph
+    if (emotionLineGraph) {
+      emotionLineGraph.data.labels = liveData.emotionalStates.labels;
+      emotionLineGraph.data.datasets[0].data = liveData.emotionalStates.values;
+      emotionLineGraph.update();
+    }
+
+    // Update Brain Wave Activity Bar Chart
+    if (brainWaveBarChart) {
+      brainWaveBarChart.data.labels = liveData.brainWaveActivity.labels;
+      brainWaveBarChart.data.datasets[0].data = liveData.brainWaveActivity.values;
+      brainWaveBarChart.update();
+    }
+
+    // Update Focus and Memory Radar Chart
+    if (focusRadarChart) {
+      focusRadarChart.data.labels = liveData.focusMemory.labels;
+      focusRadarChart.data.datasets[0].data = liveData.focusMemory.values;
+      focusRadarChart.update();
+    }
+
+    // Update Heatmap
+    if (heatmapInstance) {
+      const points = liveData.heatMap.points.map(point => [point.lat, point.lng, point.intensity]);
+      heatmapInstance.setLatLngs(points);
+    }
+
+    // Update Dial Gauges
+    if (engagementGauge) engagementGauge.refresh(liveData.gauges.engagement);
+    if (focusGauge) focusGauge.refresh(liveData.gauges.focus);
+    if (stressGauge) stressGauge.refresh(liveData.gauges.stress);
+
+    // Update Real-Time Monitoring Text
+    document.getElementById('realTimeData').innerText = liveData.realTimeMessage || 'Data is coming in...';
+  }
+
+  // Initialize visualizations
+  let emotionLineGraph, brainWaveBarChart, focusRadarChart, heatmapInstance, engagementGauge, focusGauge, stressGauge;
+
+  window.onload = () => {
+    connectWebSocket(); // Establish WebSocket connection
+
+    // Initialize Emotional States Line Graph
+    const emotionCtx = document.getElementById('emotionLineGraph').getContext('2d');
+    emotionLineGraph = new Chart(emotionCtx, {
+      type: 'line',
+      data: { labels: [], datasets: [{ label: 'Emotion Levels', data: [], borderColor: '#FF5733', borderWidth: 2 }] },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Initialize Brain Wave Activity Bar Chart
+    const brainWaveCtx = document.getElementById('brainWaveBarChart').getContext('2d');
+    brainWaveBarChart = new Chart(brainWaveCtx, {
+      type: 'bar',
+      data: { labels: [], datasets: [{ label: 'Brain Wave Activity', data: [], backgroundColor: 'rgba(54, 162, 235, 0.2)', borderColor: 'rgba(54, 162, 235, 1)', borderWidth: 2 }] },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Initialize Focus and Memory Recall Radar Chart
+    const focusRadarCtx = document.getElementById('focusRadarChart').getContext('2d');
+    focusRadarChart = new Chart(focusRadarCtx, {
+      type: 'radar',
+      data: { labels: [], datasets: [{ label: 'Focus & Memory', data: [], borderColor: '#FF5733', backgroundColor: 'rgba(255, 99, 132, 0.2)', borderWidth: 2 }] },
+      options: { responsive: true }
+    });
+
+    // Initialize Heatmap
+    heatmapInstance = L.map('heatmap').setView([0, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(heatmapInstance);
+    L.heatLayer([], { radius: 30, blur: 15, maxZoom: 16 }).addTo(heatmapInstance);
+
+    // Initialize Dial Gauges
+    engagementGauge = new JustGage({ id: 'engagementGauge', value: 0, min: 0, max: 100, title: 'Engagement' });
+    focusGauge = new JustGage({ id: 'focusGauge', value: 0, min: 0, max: 100, title: 'Focus' });
+    stressGauge = new JustGage({ id: 'stressGauge', value: 0, min: 0, max: 100, title: 'Stress' });
+  };
+
+  function goHome() {
+    window.location.href = '/';
+  }

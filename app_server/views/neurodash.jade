@@ -165,9 +165,29 @@ html(lang="en")
         text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
       }
 
+      /* Concentration meter styles */
+      #concentration-meter-container {
+        width: 100%;
+        height: 30px;
+        margin: 20px auto 0;
+        background: #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      #concentration-meter {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(to right, #ff6347, #32cd32);
+        transition: width 0.3s ease;
+      }
+
   body
     h1 Neuro Dash - Dino Game
     div.instruction
+      button(id="home-button", onclick="goHome()") Back to Home
+      button(id="start-button", onclick="startGame()") Start Game
       p Press SPACE to jump!
     div#score Points: 0
     div#game-container
@@ -175,13 +195,13 @@ html(lang="en")
         div.tail
         div.leg.left
         div.leg.right
+    div#concentration-meter-container
+      div#concentration-meter
     div#game-over-modal
-      h2 Game Over!
-      p Your score: <span id="final-score">0</span>
-      button(onclick="resetGame()") Play Again
-      button(id="home-button", onclick="goHome()") Back to Home
-    button(id="start-button", onclick="startGame()") Start Game
-
+     h2 Game Over!
+     p Your score: <span id="final-score">0</span>
+     button(onclick="resetGame()") Play Again
+     button(id="view-analysis-button", onclick="viewAnalysis()") View Your Analysis
     script.
       let dino = document.getElementById('dino');
       let gameContainer = document.getElementById('game-container');
@@ -190,6 +210,7 @@ html(lang="en")
       let finalScoreElement = document.getElementById('final-score');
       let startButton = document.getElementById('start-button');
       let homeButton = document.getElementById('home-button');
+      let concentrationMeter = document.getElementById('concentration-meter');
       let score = 0;
       let gameInterval, obstacleInterval;
       let isJumping = false;
@@ -199,8 +220,10 @@ html(lang="en")
         score = 0;
         scoreElement.textContent = `Points: ${score}`;
         gameOverModal.style.display = 'none';
+        concentrationMeter.style.width = '0%';
         createObstacles();
         gameInterval = setInterval(moveObstacles, 20);
+        updateConcentrationMeter();
         startButton.style.display = 'none';
       }
 
@@ -224,6 +247,7 @@ html(lang="en")
             obstacle.remove(); // Remove obstacles that have passed the screen
             score++;
             scoreElement.textContent = `Points: ${score}`;
+            increaseConcentrationMeter();
           } else {
             obstacle.style.left = `${currentLeft - 2}%`;
           }
@@ -257,20 +281,61 @@ html(lang="en")
         }
       });
 
+      // Increase concentration meter
+      function increaseConcentrationMeter() {
+        const currentWidth = parseInt(concentrationMeter.style.width) || 0;
+        if (currentWidth < 100) {
+          concentrationMeter.style.width = `${currentWidth + 5}%`;
+        }
+      }
+
       // End game
       function gameOver() {
         clearInterval(gameInterval);
         clearInterval(obstacleInterval);
         finalScoreElement.textContent = score;
         gameOverModal.style.display = 'block';
+
+        // Send game data to the server
+        fetch('/saveGameData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ score: score, concentration: parseInt(concentrationMeter.style.width) }) // Adjust this as per your game data
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Game data saved:', data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
       }
 
       // Reset game
       function resetGame() {
         score = 0;
         scoreElement.textContent = `Points: ${score}`;
+        concentrationMeter.style.width = '0%';
         startGame();
       }
+
+      // Update concentration meter periodically
+      function updateConcentrationMeter() {
+        setInterval(() => {
+          const currentWidth = parseInt(concentrationMeter.style.width) || 0;
+          if (currentWidth > 0) {
+            concentrationMeter.style.width = `${currentWidth - 1}%`;
+          }
+        }, 500);
+      }
+
+      // View analysis function
+      function viewAnalysis() {
+        window.location.href = '/analysis'; // This will navigate to the /analysis route
+      }
+
 
       // Go back to the home page
       function goHome() {

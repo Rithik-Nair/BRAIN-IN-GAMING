@@ -1,0 +1,20 @@
+// game.jade (Partial for the game section)
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    title Neuro Dash - Dino Game
+    link(rel="stylesheet", href="/css/styles.css")
+  body
+    h1 Neuro Dash - Dino Game
+    div#score Points: 0
+    div#game-container
+      div#dino
+    button(id="start-button" onclick="startGame()") Start Game
+    div#game-over-modal
+      h2 Game Over!
+      p Your score: <span id="final-score">0</span>
+      button(onclick="resetGame()") Play Again
+      button(id="home-button", onclick="goHome()") Back to Home
+      button(id="analysis-button", onclick="viewAnalysis()") View Your Analysis  // New button to view analysis
+    script(src="/js/game.js")

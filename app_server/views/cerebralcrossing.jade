@@ -84,8 +84,8 @@ html(lang="en")
         margin: 10px 0;
       }
 
-      /* Point meter styles */
-      #point-meter {
+      /* Point and concentration meter styles */
+      #point-meter, #concentration-meter {
         font-size: 24px;
         margin-bottom: 10px;
       }
@@ -135,6 +135,7 @@ html(lang="en")
   body
     h1 Cerebral Crossing - Crossword Puzzle Game
     #point-meter Points: 0
+    #concentration-meter Concentration: 100%
     #chances-left Chances Left: 5
     .button-container
       button.back(onclick="window.location.href='/'") Back to Home
@@ -153,7 +154,6 @@ html(lang="en")
       button(onclick="resetGame()") Play Again
 
     script.
-      // Example crossword data
       const crossword = {
         grid: [
           ['A', 'P', 'P', 'L', 'E', '', '', '', '', ''],
@@ -183,23 +183,35 @@ html(lang="en")
 
       let points = 0;
       let correctAnswers = 0;
-      let chancesLeft = 5; // Limit the number of chances
+      let chancesLeft = 5;
+      let concentration = 100;
+      let concentrationInterval;
 
-      // Start game function
       function startGame() {
         points = 0;
         correctAnswers = 0;
-        chancesLeft = 5; // Reset chances
+        chancesLeft = 5;
+        concentration = 100;
         updatePoints();
+        updateConcentration();
         generateCrosswordGrid();
         generateClues();
         updateChances();
+
+        // Start concentration meter decay
+        clearInterval(concentrationInterval);
+        concentrationInterval = setInterval(() => {
+          concentration = Math.max(0, concentration - 1);
+          updateConcentration();
+          if (concentration === 0) {
+            gameOver();
+          }
+        }, 1000);
       }
 
-      // Generate crossword grid dynamically
       function generateCrosswordGrid() {
         const gridContainer = document.querySelector('.crossword-grid');
-        gridContainer.innerHTML = ''; // Clear the existing grid
+        gridContainer.innerHTML = '';
         crossword.grid.forEach((row, rowIndex) => {
           row.forEach((cell, colIndex) => {
             const cellElement = document.createElement('input');
@@ -208,21 +220,21 @@ html(lang="en")
             cellElement.classList.add('crossword-cell');
             
             if (cell === '') {
-              // Apply the 'black' class to empty cells
               cellElement.classList.add('black');
             } else {
-              cellElement.setAttribute('data-correct', cell); // Store correct answer in a custom attribute
+              cellElement.setAttribute('data-correct', cell);
             }
 
-            // Add event listener to check answer when typing
-            cellElement.addEventListener('input', checkAnswer);
+            cellElement.addEventListener('input', (event) => {
+              checkAnswer(event);
+              increaseConcentration();
+            });
 
             gridContainer.appendChild(cellElement);
           });
         });
       }
 
-      // Generate clue list dynamically
       function generateClues() {
         const cluesContainer = document.getElementById('clues');
         cluesContainer.innerHTML = '';
@@ -240,56 +252,57 @@ html(lang="en")
         });
       }
 
-      // Check the crossword answers when the user types in a cell
       function checkAnswer(event) {
         const cell = event.target;
         const correctAnswer = cell.getAttribute('data-correct');
         const userAnswer = cell.value.toUpperCase();
         
         if (userAnswer === correctAnswer) {
-          cell.style.backgroundColor = '#90EE90'; // Green for correct
-          points++; // Add points for correct answer
+          cell.style.backgroundColor = '#90EE90';
+          points++;
           correctAnswers++;
         } else if (userAnswer !== '') {
-          cell.style.backgroundColor = '#FFCCCB'; // Red for incorrect
-          points--; // Deduct points for incorrect answer
-          chancesLeft--; // Deduct a chance for wrong answer
+          cell.style.backgroundColor = '#FFCCCB';
+          points--;
+          chancesLeft--;
           updateChances();
         }
 
-        updatePoints(); // Update points after each input
+        updatePoints();
 
-        // Check if all answers are correct (game over condition)
         if (correctAnswers === crossword.clues.across.length + crossword.clues.down.length) {
           gameOver();
         }
 
-        // If chances run out, end the game
         if (chancesLeft <= 0) {
           gameOver();
         }
       }
 
-      // Update points on the screen
       function updatePoints() {
-        const pointMeter = document.getElementById('point-meter');
-        pointMeter.textContent = 'Points: ' + points;
+        document.getElementById('point-meter').textContent = 'Points: ' + points;
       }
 
-      // Update chances left on the screen
       function updateChances() {
-        const chancesMeter = document.getElementById('chances-left');
-        chancesMeter.textContent = 'Chances Left: ' + chancesLeft;
+        document.getElementById('chances-left').textContent = 'Chances Left: ' + chancesLeft;
       }
 
-      // Game over function
+      function updateConcentration() {
+        document.getElementById('concentration-meter').textContent = 'Concentration: ' + concentration + '%';
+      }
+
+      function increaseConcentration() {
+        concentration = Math.min(100, concentration + 5);
+        updateConcentration();
+      }
+
       function gameOver() {
+        clearInterval(concentrationInterval);
         document.getElementById('final-score').textContent = points;
         document.getElementById('game-over-modal').style.display = 'block';
         document.getElementById('modal-overlay').style.display = 'block';
       }
 
-      // Reset game function
       function resetGame() {
         document.getElementById('game-over-modal').style.display = 'none';
         document.getElementById('modal-overlay').style.display = 'none';
