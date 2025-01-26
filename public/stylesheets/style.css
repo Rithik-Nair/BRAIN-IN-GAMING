@@ -639,6 +639,19 @@ button[type="submit"]:hover {
 .game-box .play-button:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
+
+#game-container {
+  display: grid;
+  grid-template-columns: repeat(8, 50px);
+  grid-gap: 5px;
+  margin-top: 30px;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  z-index: 999; /* Ensure it's above the overlay */
+  position: relative; /* Ensure it's within the body and not being overlapped */
+}
+
 /* Profile Box Styling */
 .profile-box {
   width: 90%;
@@ -1013,4 +1026,85 @@ canvas, #heatmap, #engagementGauge, #focusGauge, #stressGauge {
   max-width: 600px; /* Set a max width to prevent boxes from getting too large */
   margin-left: auto;
   margin-right: auto;
+}
+
+/* Concentration Meter styles */
+#concentration-meter-container {
+  width: 300px;
+  height: 300px;
+  margin: 20px auto;
+  position: relative;
+  background: #e0e0e0;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  color: #ff6347;
+  font-weight: bold;
+}
+
+.circle {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background: conic-gradient(#ff6347 0%, #ff6347 50%, #e0e0e0 50%, #e0e0e0 100%);
+  border-radius: 50%;
+}
+
+.circle-text {
+  position: absolute;
+  font-size: 24px;
+}
+
+/* Gauge Chart container styles */
+#gauge-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 200px;
+  height: 100px;  /* Change height to make it a semi-circle */
+  background-color: #fff;
+  border-radius: 100px 100px 0 0;  /* Semi-circle shape */
+  border: 2px solid #000;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  overflow: hidden;
+}
+
+#gauge-container h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+#chances {
+  margin-top: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+#chances-bar {
+  margin-top: 10px;
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#chances-progress {
+  height: 100%;
+  width: 100%;
+  background-color: #42a5f5;
+  transition: width 0.3s ease;
+}
+
+/* Gauge chart container */
+#gauge-container {
+  margin: 30px auto;
+  width: 200px;
+  height: 200px;
 }

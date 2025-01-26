@@ -4,6 +4,7 @@ let scoreElement = document.getElementById('score');
 let score = 0;
 let gameInterval, obstacleInterval;
 let isJumping = false;
+let concentrationData = 50; // Example value for concentration level (between 0 and 100)
 
 function startGame() {
   score = 0;
@@ -76,8 +77,69 @@ function gameOver() {
   `;
 }
 
-// game.js (Client-side JS)
+// Redirect to analysis page (for future functionality)
 function viewAnalysis() {
   window.location.href = '/analysis'; // Redirect to the analysis page
 }
-  
+
+// Update concentration meter
+function updateConcentrationMeter() {
+  concentrationData = Math.floor(Math.random() * 100); // Random concentration data for demo purposes
+  gaugeChart.data.datasets[0].data = [concentrationData, 100 - concentrationData];
+  gaugeChart.options.elements.center.text = `${concentrationData}%`;
+  gaugeChart.update();
+}
+
+// Initialize the concentration meter chart (Chart.js)
+let concentrationMeterCanvas = document.getElementById('concentration-meter');
+let gaugeChart = new Chart(concentrationMeterCanvas, {
+  type: 'doughnut',
+  data: {
+    datasets: [{
+      data: [concentrationData, 100 - concentrationData],
+      backgroundColor: ['#ff6347', '#e0e0e0'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    circumference: Math.PI,
+    rotation: Math.PI,
+    cutoutPercentage: 80,
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: {
+      animateRotate: true,
+      animateScale: true
+    },
+    tooltips: {
+      enabled: false
+    },
+    elements: {
+      center: {
+        text: `${concentrationData}%`, // Label to show concentration data
+        fontStyle: 'Arial',
+        fontSize: 30,
+        fontColor: '#ff6347'
+      }
+    },
+    scale: {
+      display: true,
+      position: 'top',
+      ticks: {
+        min: 0,
+        max: 100,
+        stepSize: 10,
+        fontColor: '#333'
+      },
+      gridLines: {
+        color: '#e0e0e0'
+      }
+    },
+    legend: {
+      display: false
+    }
+  }
+});
+
+// Update concentration meter every 2 seconds (example)
+setInterval(updateConcentrationMeter, 2000);

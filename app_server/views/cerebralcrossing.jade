@@ -3,308 +3,376 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Cerebral Crossing - Crossword Puzzle Game
+    title Word Search Game - Cerebral Crossing
     style.
-      /* General body styles */
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        background: #f0f0f0;
-        color: #000;
+      /* Reset */
+      * {
         margin: 0;
-        padding: 20px;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      /* Crossword grid styles */
-      .crossword-grid {
-        display: grid;
-        grid-template-columns: repeat(10, 40px); /* Adjust columns as per your grid size */
-        grid-template-rows: repeat(10, 40px); /* Adjust rows as per your grid size */
-        gap: 5px;
+      /* Body styling */
+      body {
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(to bottom, #ff7e5f, #feb47b);
+        display: flex;
         justify-content: center;
-        margin-bottom: 20px;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        overflow: hidden;
+        position: relative; /* To ensure concentration meter is visible */
       }
 
-      .crossword-cell {
-        width: 40px;
-        height: 40px;
-        border: 1px solid #000;
-        text-align: center;
-        font-size: 18px;
-        background-color: #fff;
-        outline: none;
-        transition: background-color 0.3s ease;
-      }
-
-      .crossword-cell:focus {
-        background-color: #dcdcdc;
-      }
-
-      /* Black cells (where no letters can be typed) */
-      .crossword-cell.black {
-        background-color: #000;
-        color: #000;
-        border: none;
-        cursor: not-allowed;
-      }
-
-      /* Button container for back and start buttons */
-      .button-container {
-        margin-bottom: 20px;
-      }
-
-      button.back, button.start {
-        color: #fff;
-        background: #607d8b;
-        border: none;
-        border-radius: 8px;
-        padding: 15px 25px;
-        font-size: 18px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-        margin-right: 10px;
-      }
-
-      button.back:hover, button.start:hover {
-        background: #3e4a52;
-      }
-
-      /* Clue styles */
-      .clue-list {
-        text-align: left;
-        font-size: 18px;
-        margin-top: 20px;
-        display: inline-block;
-        max-width: 300px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      .clue-item {
-        margin: 10px 0;
-      }
-
-      /* Point and concentration meter styles */
-      #point-meter, #concentration-meter {
-        font-size: 24px;
-        margin-bottom: 10px;
-      }
-
-      /* Modal styles */
-      #game-over-modal {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgba(0, 0, 0, 0.8);
+      h1 {
+        font-size: 3rem;
+        font-weight: 700;
         color: white;
-        padding: 30px;
+        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+        margin-bottom: 20px;
+      }
+
+      #game-container {
+        display: grid;
+        grid-template-columns: repeat(8, 60px);
+        grid-gap: 8px;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        display: none;
+        transform: scale(0);
+        animation: scaleUp 0.5s ease forwards;
+      }
+
+      .cell {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f5f5f5;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
-        text-align: center;
-      }
-
-      #game-over-modal button {
-        margin-top: 15px;
-        background-color: #607d8b;
-        color: #fff;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
+        font-size: 1.4rem;
+        font-weight: bold;
         cursor: pointer;
+        transition: all 0.3s ease;
       }
 
-      #game-over-modal button:hover {
-        background-color: #3e4a52;
+      .cell:hover {
+        background-color: #ffeb3b;
+        transform: scale(1.1);
       }
 
-      /* Modal overlay */
-      #modal-overlay {
+      .cell.selected {
+        background-color: #ff9800;
+        color: white;
+        animation: pulse 0.5s infinite;
+      }
+
+      .cell.found {
+        background-color: #4caf50;
+        color: white;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.8);
+        animation: glow 1s ease-out;
+      }
+
+      #message {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: white;
+        margin-top: 20px;
+      }
+
+      #reset-button, #start-button {
+        padding: 12px 30px;
+        margin-top: 20px;
+        background-color: #42a5f5;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      #reset-button:hover, #start-button:hover {
+        background-color: #1e88e5;
+        transform: scale(1.1);
+      }
+
+      /* Pop-up Modal Styling */
+      #popup {
         display: none;
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.5s ease-out forwards;
       }
+
+      #popup-content {
+        background-color: white;
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      }
+
+      #popup-message {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      #popup-button {
+        padding: 12px 30px;
+        background-color: #42a5f5;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 1.3rem;
+        transition: background-color 0.3s ease;
+      }
+
+      #popup-button:hover {
+        background-color: #1e88e5;
+      }
+
+      /* Concentration Meter */
+      #concentration-meter {
+        width: 200px;
+        height: 30px;
+        background-color: #ddd;
+        border-radius: 15px;
+        margin-top: 20px;
+        position: absolute; /* Position it fixed */
+        top: 10px; /* Keep it near the top */
+        left: 50%; /* Center horizontally */
+        transform: translateX(-50%);
+      }
+
+      #concentration-level {
+        height: 100%;
+        background-color: #4caf50;
+        border-radius: 15px;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      /* Animations */
+      @keyframes scaleUp {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes glow {
+        0% {
+          box-shadow: 0 0 5px rgba(76, 175, 80, 0.6);
+        }
+        100% {
+          box-shadow: 0 0 15px rgba(76, 175, 80, 1);
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* Google Fonts */
+      @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
   body
-    h1 Cerebral Crossing - Crossword Puzzle Game
-    #point-meter Points: 0
-    #concentration-meter Concentration: 100%
-    #chances-left Chances Left: 5
-    .button-container
-      button.back(onclick="window.location.href='/'") Back to Home
-      button.start(onclick="startGame()") Start Game
-    div#crossword-container
-      div.crossword-grid
-        // Empty at the start, will be populated by JavaScript
-    div.clue-list
-      h3 Clues
-      div#clues
-        // Clues will be listed here
-    div#modal-overlay
-    div#game-over-modal
-      h2 Game Over!
-      p Your score: <span id="final-score">0</span>
-      button(onclick="resetGame()") Play Again
-
+    h1 Cerebral Crossing - Word Search
+    p#message Find the hidden words!
+    p#chances You will only get 1 chance to play,if you select any wrong word,please reload the page to restart the game
+    #concentration-meter
+      div#concentration-level
+    #game-container
+    button#start-button(onclick="startGame()") Start Game
+    button(onclick="window.location.href='/home'") Back Home
+    button#reset-button(onclick="resetGame()", style="display:none;") Reset Game
+    #popup
+      div#popup-content
+        p#popup-message
+        button#popup-button(onclick="closePopup()") OK
+        button#popup-button(onclick="playAgain()") Play Again
+        button#popup-button(onclick="viewAnalysis()") View Analysis
     script.
-      const crossword = {
-        grid: [
-          ['A', 'P', 'P', 'L', 'E', '', '', '', '', ''],
-          ['', '', '', 'P', '', '', 'B', 'A', 'N', 'A'],
-          ['', '', '', 'P', '', '', '', '', '', ''],
-          ['P', 'A', 'R', 'K', 'E', 'R', '', '', '', ''],
-          ['', '', '', 'E', '', '', '', '', '', ''],
-          ['', '', '', 'D', '', '', '', '', '', ''],
-          ['', '', '', 'R', '', '', '', '', '', ''],
-          ['B', 'A', 'C', 'K', 'E', 'R', '', '', '', ''],
-          ['', '', '', 'K', '', '', '', '', '', ''],
-          ['', '', '', 'E', '', '', '', '', '', '']
-        ],
-        clues: {
-          across: [
-            { number: 1, clue: 'A fruit', answer: 'APPLE' },
-            { number: 4, clue: 'An occupation', answer: 'PARKER' },
-            { number: 7, clue: 'A baker', answer: 'BAKER' }
-          ],
-          down: [
-            { number: 1, clue: 'A fruit', answer: 'APPLE' },
-            { number: 2, clue: 'An occupation', answer: 'PARKER' },
-            { number: 5, clue: 'A baker', answer: 'BAKER' }
-          ]
-        }
-      };
-
-      let points = 0;
-      let correctAnswers = 0;
-      let chancesLeft = 5;
-      let concentration = 100;
-      let concentrationInterval;
+      let words = ["LION", "TIGER", "BEAR", "FOX", "WOLF", "EAGLE", "SHARK", "SNAKE"];
+      let gridSize = 8;
+      let grid = [];
+      let selectedCells = [];
+      let foundWords = [];
+      let chances = 5;
+      let concentration = 0;
 
       function startGame() {
-        points = 0;
-        correctAnswers = 0;
-        chancesLeft = 5;
-        concentration = 100;
-        updatePoints();
-        updateConcentration();
-        generateCrosswordGrid();
-        generateClues();
-        updateChances();
-
-        // Start concentration meter decay
-        clearInterval(concentrationInterval);
-        concentrationInterval = setInterval(() => {
-          concentration = Math.max(0, concentration - 1);
-          updateConcentration();
-          if (concentration === 0) {
-            gameOver();
-          }
-        }, 1000);
+        document.getElementById('game-container').style.display = 'grid'; // Show the game grid
+        document.getElementById('start-button').style.display = 'none'; // Hide the Start Game button
+        document.getElementById('reset-button').style.display = 'inline-block'; // Show the Reset Game button
+        document.getElementById('chances').style.display = 'inline-block'; // Show the chances remaining
+        document.getElementById('message').textContent = 'Find the hidden words!';
+        generateGrid();
+        closePopup(); // Close the popup if open
+        updateConcentration(); // Reset concentration meter
       }
 
-      function generateCrosswordGrid() {
-        const gridContainer = document.querySelector('.crossword-grid');
-        gridContainer.innerHTML = '';
-        crossword.grid.forEach((row, rowIndex) => {
-          row.forEach((cell, colIndex) => {
-            const cellElement = document.createElement('input');
-            cellElement.type = 'text';
-            cellElement.maxLength = 1;
-            cellElement.classList.add('crossword-cell');
-            
-            if (cell === '') {
-              cellElement.classList.add('black');
-            } else {
-              cellElement.setAttribute('data-correct', cell);
+      function generateGrid() {
+        grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
+
+        words.forEach(word => {
+          let placed = false;
+          while (!placed) {
+            let direction = Math.random() > 0.5 ? 'horizontal' : 'vertical';
+            let row = Math.floor(Math.random() * gridSize);
+            let col = Math.floor(Math.random() * gridSize);
+
+            if (canPlaceWord(word, row, col, direction)) {
+              placeWord(word, row, col, direction);
+              placed = true;
             }
+          }
+        });
 
-            cellElement.addEventListener('input', (event) => {
-              checkAnswer(event);
-              increaseConcentration();
-            });
+        fillEmptyCells();
+        createGridUI();
+      }
 
-            gridContainer.appendChild(cellElement);
+      function canPlaceWord(word, row, col, direction) {
+        if (direction === 'horizontal') {
+          if (col + word.length > gridSize) return false;
+          for (let i = 0; i < word.length; i++) {
+            if (grid[row][col + i] !== '') return false;
+          }
+        } else {
+          if (row + word.length > gridSize) return false;
+          for (let i = 0; i < word.length; i++) {
+            if (grid[row + i][col] !== '') return false;
+          }
+        }
+        return true;
+      }
+
+      function placeWord(word, row, col, direction) {
+        if (direction === 'horizontal') {
+          for (let i = 0; i < word.length; i++) {
+            grid[row][col + i] = word[i];
+          }
+        } else {
+          for (let i = 0; i < word.length; i++) {
+            grid[row + i][col] = word[i];
+          }
+        }
+      }
+
+      function fillEmptyCells() {
+        for (let row = 0; row < gridSize; row++) {
+          for (let col = 0; col < gridSize; col++) {
+            if (grid[row][col] === '') {
+              grid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+            }
+          }
+        }
+      }
+
+      function createGridUI() {
+        const container = document.getElementById('game-container');
+        container.innerHTML = ''; // Clear the existing grid
+        grid.forEach((row, rowIndex) => {
+          row.forEach((cell, colIndex) => {
+            const cellElement = document.createElement('div');
+            cellElement.classList.add('cell');
+            cellElement.textContent = cell;
+            cellElement.setAttribute('data-row', rowIndex);
+            cellElement.setAttribute('data-col', colIndex);
+            cellElement.onclick = () => selectCell(rowIndex, colIndex);
+            container.appendChild(cellElement);
           });
         });
       }
 
-      function generateClues() {
-        const cluesContainer = document.getElementById('clues');
-        cluesContainer.innerHTML = '';
-        crossword.clues.across.forEach(clue => {
-          const clueElement = document.createElement('div');
-          clueElement.classList.add('clue-item');
-          clueElement.textContent = `Across ${clue.number}: ${clue.clue}`;
-          cluesContainer.appendChild(clueElement);
-        });
-        crossword.clues.down.forEach(clue => {
-          const clueElement = document.createElement('div');
-          clueElement.classList.add('clue-item');
-          clueElement.textContent = `Down ${clue.number}: ${clue.clue}`;
-          cluesContainer.appendChild(clueElement);
-        });
+      function selectCell(row, col) {
+        const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+        if (cellElement.classList.contains('found') || selectedCells.some(cell => cell.row === row && cell.col === col)) return;
+        cellElement.classList.add('selected');
+        selectedCells.push({ row, col, letter: cellElement.textContent });
+        checkForFoundWords();
       }
 
-      function checkAnswer(event) {
-        const cell = event.target;
-        const correctAnswer = cell.getAttribute('data-correct');
-        const userAnswer = cell.value.toUpperCase();
-        
-        if (userAnswer === correctAnswer) {
-          cell.style.backgroundColor = '#90EE90';
-          points++;
-          correctAnswers++;
-        } else if (userAnswer !== '') {
-          cell.style.backgroundColor = '#FFCCCB';
-          points--;
-          chancesLeft--;
-          updateChances();
+      function checkForFoundWords() {
+        const selectedWord = selectedCells.map(cell => cell.letter).join('');
+        if (words.includes(selectedWord)) {
+          foundWords.push(selectedWord);
+          selectedCells.forEach(cell => {
+            const cellElement = document.querySelector(`.cell[data-row="${cell.row}"][data-col="${cell.col}"]`);
+            cellElement.classList.add('found');
+          });
+          selectedCells = [];
+          updateConcentration(); // Increase concentration after finding a word
         }
 
-        updatePoints();
-
-        if (correctAnswers === crossword.clues.across.length + crossword.clues.down.length) {
-          gameOver();
+        if (foundWords.length === words.length) {
+          showPopup("You found all the words! Great job!");
         }
-
-        if (chancesLeft <= 0) {
-          gameOver();
-        }
-      }
-
-      function updatePoints() {
-        document.getElementById('point-meter').textContent = 'Points: ' + points;
-      }
-
-      function updateChances() {
-        document.getElementById('chances-left').textContent = 'Chances Left: ' + chancesLeft;
       }
 
       function updateConcentration() {
-        document.getElementById('concentration-meter').textContent = 'Concentration: ' + concentration + '%';
-      }
-
-      function increaseConcentration() {
-        concentration = Math.min(100, concentration + 5);
-        updateConcentration();
-      }
-
-      function gameOver() {
-        clearInterval(concentrationInterval);
-        document.getElementById('final-score').textContent = points;
-        document.getElementById('game-over-modal').style.display = 'block';
-        document.getElementById('modal-overlay').style.display = 'block';
+        concentration = foundWords.length * 10;
+        document.getElementById('concentration-level').style.width = `${concentration}%`;
       }
 
       function resetGame() {
-        document.getElementById('game-over-modal').style.display = 'none';
-        document.getElementById('modal-overlay').style.display = 'none';
-        startGame();
+        foundWords = [];
+        selectedCells = [];
+        chances = 5;
+        concentration = 0;
+        updateConcentration();
+        generateGrid();
+      }
+
+      function showPopup(message) {
+        document.getElementById('popup-message').textContent = message;
+        document.getElementById('popup').style.display = 'flex';
+      }
+
+      function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+      }
+
+      function playAgain() {
+        resetGame();
+        closePopup();
+      }
+
+      function viewAnalysis() {
+        window.location.href='/analysis';
       }

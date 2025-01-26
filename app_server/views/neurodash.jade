@@ -3,7 +3,7 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title Neuro Dash - Dino Game
+    title Neuro Dash
     style.
       /* General body styles */
       body {
@@ -184,7 +184,7 @@ html(lang="en")
       }
 
   body
-    h1 Neuro Dash - Dino Game
+    h1 Neuro Dash
     div.instruction
       button(id="home-button", onclick="goHome()") Back to Home
       button(id="start-button", onclick="startGame()") Start Game
@@ -200,8 +200,9 @@ html(lang="en")
     div#game-over-modal
      h2 Game Over!
      p Your score: <span id="final-score">0</span>
-     button(onclick="resetGame()") Play Again
+     button(id="reset-button", onclick="resetGame()") Play Again
      button(id="view-analysis-button", onclick="viewAnalysis()") View Your Analysis
+     button(onclick="window.location.href='/home'") Back Home
     script.
       let dino = document.getElementById('dino');
       let gameContainer = document.getElementById('game-container');
@@ -211,12 +212,15 @@ html(lang="en")
       let startButton = document.getElementById('start-button');
       let homeButton = document.getElementById('home-button');
       let concentrationMeter = document.getElementById('concentration-meter');
+      let resetButton = document.getElementById('reset-button');
       let score = 0;
       let gameInterval, obstacleInterval;
       let isJumping = false;
+      let isGameReset = false;
 
       // Function to start the game
       function startGame() {
+        if (isGameReset) return; // Prevent starting again before reset
         score = 0;
         scoreElement.textContent = `Points: ${score}`;
         gameOverModal.style.display = 'none';
@@ -295,6 +299,7 @@ html(lang="en")
         clearInterval(obstacleInterval);
         finalScoreElement.textContent = score;
         gameOverModal.style.display = 'block';
+        isGameReset = true; // Mark game as reset
 
         // Send game data to the server
         fetch('/saveGameData', {
@@ -302,7 +307,7 @@ html(lang="en")
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ score: score, concentration: parseInt(concentrationMeter.style.width) }) // Adjust this as per your game data
+          body: JSON.stringify({ score: score, concentration: parseInt(concentrationMeter.style.width) })
         })
         .then(response => response.json())
         .then(data => {
@@ -318,6 +323,8 @@ html(lang="en")
         score = 0;
         scoreElement.textContent = `Points: ${score}`;
         concentrationMeter.style.width = '0%';
+        gameOverModal.style.display = 'none';
+        isGameReset = false; // Reset the flag
         startGame();
       }
 
@@ -335,7 +342,6 @@ html(lang="en")
       function viewAnalysis() {
         window.location.href = '/analysis'; // This will navigate to the /analysis route
       }
-
 
       // Go back to the home page
       function goHome() {

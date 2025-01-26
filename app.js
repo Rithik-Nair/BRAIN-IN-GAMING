@@ -109,7 +109,7 @@ app.post('/register', (req, res) => {
 
   const newUser = new User({ username, email, password });
   newUser.save()
-    .then(() => res.redirect('/login'))
+    .then(() => res.redirect('/home'))
     .catch(err => res.status(500).send('Error registering user'));
 });
 
@@ -187,8 +187,9 @@ app.get('/games/brainbeats', (req, res) => {
   res.render('brainbeats');
 });
 
-app.get('/games/cerebralcrossing', (req, res) => {
-  res.render('cerebralcrossing');
+app.get('/cerebralcrossing', (req, res) => {
+  const words = ["LION", "TIGER", "BEAR", "FOX", "WOLF", "EAGLE", "SHARK", "SNAKE"];
+  res.render('cerebralcrossing', { words: words });
 });
 
 // 404 Route

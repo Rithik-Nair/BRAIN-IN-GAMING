@@ -210,7 +210,8 @@ router.get('/games/brainbeats', (req, res) => {
 
 // Route for Cerebral Crossing game
 router.get('/games/cerebralcrossing', (req, res) => {
-  res.render('cerebralcrossing');
+  const words = ["LION", "TIGER", "BEAR", "FOX", "WOLF", "EAGLE", "SHARK", "SNAKE"];
+  res.render('cerebralcrossing', { words });  // This passes 'words' to the view
 });
 
 // Mount the history router under /history

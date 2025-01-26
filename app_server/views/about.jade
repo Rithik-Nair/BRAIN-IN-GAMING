@@ -19,47 +19,55 @@ block content
     .main-container
         .hero-section
             h1 About Brain in Gaming
-        .cta-box
-            p Brain in Gaming is a revolutionary platform where players control the entire gaming experience with their minds. Our goal is to create a new way of interacting with games by integrating **neurotechnology** and **artificial intelligence**.
+            p Revolutionizing the way you play, with the power of your mind.
 
-        .cta-box
-            h2 What is Brain in Gaming?
-            p At Brain in Gaming, we use cutting-edge EEG technology to enable players to control video games purely through brain signals. Players wear an EEG headset, which captures brain activity and translates it into actions in the game.
+        .about-section
+            .cta-box
+                h2 What is Brain in Gaming?
+                p At Brain in Gaming, we integrate NeuroTechnology with gaming, allowing players to control their games using EEG brainwave signals. With our advanced systems, the impossible becomes possible.
 
-        .cta-box
-            h2 Our Vision
-            p We envision a future where games are no longer controlled with traditional input devices like keyboards and controllers. Instead, players will interact with games using their thoughts, creating a more immersive and hands-free gaming experience.
+            .cta-box
+                h2 Our Vision
+                p Imagine a future where traditional controllers are a thing of the past. We aim to create a fully immersive and hands-free gaming world powered by your mind.
 
-        .cta-box
-            h2 Features
-            ul
-                li **Mind-Controlled Gaming**: The player’s brainwaves control in-game actions.
-                li **AI-Powered Experience**: Our games use artificial intelligence to adapt and enhance gameplay.
-                li **Real-Time Performance Analytics**: Track brain activity and performance throughout the game.
+            .cta-box
+                h2 Features
+                ul
+                    li Strong Mind-Controlled Gaming: Translate your brain activity into in-game actions.
+                    li Adaptive AI-Powered Experience: AI ensures gameplay adapts to your skill level.
+                    li Real-Time Analytics: Monitor brain activity, focus, and performance during the game.
 
-        .cta-box
-            h2 Join the Revolution
-            p Be part of the future of gaming with Brain in Gaming. Explore our platform, improve your cognitive abilities, and experience the power of mind-controlled gaming today.
+            .cta-box
+                h2 Join the Revolution
+                p Unlock your brain’s potential and step into the future of gaming. Join us today and experience the power of mind-controlled gaming.
 
     footer
         .footer-container
             .footer-feature
-                h4 Brain-Powered Gaming
-                p Experience gaming like never before by controlling the game with your mind.
+                h4 Next-Level Gaming
+                p Control the game using just your mind with cutting-edge EEG technology.
             .footer-feature
-                h4 Cutting-Edge AI Integration
-                p Harness AI to improve your gameplay and enhance your gaming experience.
+                h4 Smarter Games with AI
+                p Our adaptive AI enhances the gaming experience like never before.
             .footer-feature
-                h4 Real-Time Performance Analytics
-                p Receive insights into your gaming skills and track your improvements.
+                h4 Insights for Improvement
+                p Analyze your focus, engagement, and performance in real-time.
+            .footer-feature
+                h4 Personalized for You
+                p Experience tailored gameplay designed for your unique style.
+            .footer-feature
+                h4 Cognitive Enhancement
+                p Improve focus, memory, and mental clarity as you play.
 
         p &copy; 2025 Brain in Gaming || AI Department || Anurag University || All Rights Reserved.
 
-    // JavaScript to handle the menu toggle
     script.
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('.menu-icon').addEventListener('click', function () {
-                this.classList.toggle('active');
-                document.querySelector('.dropdown-menu').classList.toggle('show');
+            const menuIcon = document.querySelector('.menu-icon');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+
+            menuIcon.addEventListener('click', function () {
+                menuIcon.classList.toggle('active');
+                dropdownMenu.classList.toggle('show');
             });
         });
