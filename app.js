@@ -6,6 +6,7 @@ const passport = require('passport');
 const path = require('path');
 const User = require('./app_server/models/user');  // Import the User model
 const GameData = require('./app_server/models/gameData'); // Import GameData model
+const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 const router = express.Router(); // Define the router
@@ -20,6 +21,14 @@ app.set('views', path.join(__dirname, 'app_server/views'));
 
 // Serve static files (CSS, JS, images, etc.)
 app.use(express.static(path.join(__dirname, 'public')));
+// Proxy Flask API
+app.use(
+  '/api',
+  createProxyMiddleware({
+    target: 'http://localhost:5000', // Flask server
+    changeOrigin: true,
+  })
+);
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://127.0.0.1:27017/brain_in_gaming')
