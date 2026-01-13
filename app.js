@@ -8,6 +8,8 @@ const User = require('./app_server/models/user');  // Import the User model
 const GameData = require('./app_server/models/gameData'); // Import GameData model
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
+require('dotenv').config();
+
 const app = express();
 const router = express.Router(); // Define the router
 
@@ -31,9 +33,9 @@ app.use(
 );
 
 // Connect to MongoDB database
-mongoose.connect('mongodb://127.0.0.1:27017/brain_in_gaming')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.log('Error connecting to MongoDB:', err));
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch((err) => console.log('Error connecting to MongoDB Atlas:', err));
 
 // Set up session middleware
 app.use(session({
@@ -207,6 +209,8 @@ app.use((req, res, next) => {
 });
 
 // Start the Server
-app.listen(3000, () => {
-  console.log('Server started on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
