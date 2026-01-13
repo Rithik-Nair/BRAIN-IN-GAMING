@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   '/api',
   createProxyMiddleware({
-    target: 'http://localhost:5000', // Flask server
+    target: 'https://flask-brain-in-gaming.onrender.com', // Flask server
     changeOrigin: true,
   })
 );
@@ -40,8 +40,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Set up session middleware
 app.use(session({
     secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true
+    resave: false,
+    saveUninitialized: true
 }));
 
 // Initialize Passport.js for user authentication
