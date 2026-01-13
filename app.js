@@ -39,7 +39,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 // Set up session middleware
 app.use(session({
-  secret: 'Br@!n_!n_G@m!ng',  // Replace with your actual secret key
+    secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }));
