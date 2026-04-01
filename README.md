@@ -55,6 +55,8 @@ npm start
 4️⃣ Open in browser
 https://localhost:3000
 
+---
+
 ## 📊 Analysis Dashboard  
 
 After each game, users can:
