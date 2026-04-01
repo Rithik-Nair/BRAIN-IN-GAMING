@@ -40,9 +40,8 @@ An innovative project that enables users to play games using **brain signals**. 
 ---
 
 ## ⚙️ Installation & Setup
-
-1️⃣ Clone the repository
 ```bash
+1️⃣ Clone the repository
 git clone https://github.com/your-username/brain-in-gaming.git
 cd brain-in-gaming
 
@@ -55,7 +54,7 @@ npm start
 4️⃣ Open in browser
 https://localhost:3000
 
----
+```
 
 ## 📊 Analysis Dashboard  
 
